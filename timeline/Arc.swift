@@ -13,9 +13,9 @@ class Arc: Identifiable {
     var id: UUID
     var title: String
     var events: [Event]
-    var characters: [Character]
+    var characters: [StoryChar]
     
-    init(id: UUID = UUID(), title: String, events: [Event], characters: [Character]) {
+    init(id: UUID = UUID(), title: String, events: [Event], characters: [StoryChar]) {
         self.id = id
         self.title = title
         self.events = events

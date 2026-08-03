@@ -16,9 +16,9 @@ class Event: Identifiable {
     var month: Int
     var day: Int
     var details: String
-    var characters: [Character] // References characters involved
+    var characters: [StoryChar] // References characters involved
     
-    init(id: UUID = UUID(), title: String, year: Int, month: Int, day: Int, details: String, characters: [Character] = []) {
+    init(id: UUID = UUID(), title: String, year: Int, month: Int, day: Int, details: String, characters: [StoryChar] = []) {
         self.id = id
         self.title = title
         self.year = year

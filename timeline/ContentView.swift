@@ -9,11 +9,11 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @Binding var document: Arc
-
+    @Query private var items: [TimelineDocument]
+    
     var body: some View {
-        List(document.events) { event in
-            Text(event.id.uuidString)
+        List(items) { item in
+            Text(item.title)
         }
     }
 }

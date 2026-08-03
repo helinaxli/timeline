@@ -1,5 +1,5 @@
 //
-//  TimelineModels.swift
+//  StoryChar.swift
 //  timeline
 //
 //  Created by Helina L. on 8/3/26.
@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-class StoryCharacter: Identifiable {
+class StoryChar: Identifiable {
     var id: UUID
     var name: String
     var role: String

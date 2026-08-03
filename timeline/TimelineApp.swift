@@ -1,5 +1,5 @@
 //
-//  timelineApp.swift
+//  TimelineApp.swift
 //  timeline
 //
 //  Created by Helina L. on 8/3/26.
@@ -10,7 +10,6 @@ import SwiftData
 import UniformTypeIdentifiers
 
 extension UTType {
-    /// Custom document type for your app
     static var projectFile = UTType(
         exportedAs: "com.helinaxli.timeline.timeline",
         conformingTo: .data
@@ -18,9 +17,9 @@ extension UTType {
 }
 
 @main
-struct ProjectApp: App {
+struct TimelineApp: App {
     var body: some Scene {
-        DocumentGroup(editing: Arc.self, contentType: .projectFile) {
+        DocumentGroup(editing: TimelineDocument.self, contentType: .projectFile) {
             ContentView()
         }
     }
