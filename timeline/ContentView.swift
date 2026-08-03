@@ -6,15 +6,14 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
-    @Binding var document: timelineDocument
+    @Binding var document: Arc
 
     var body: some View {
-        TextEditor(text: $document.text)
+        List(document.events) { event in
+            Text(event.id.uuidString)
+        }
     }
-}
-
-#Preview {
-    ContentView(document: .constant(timelineDocument()))
 }
