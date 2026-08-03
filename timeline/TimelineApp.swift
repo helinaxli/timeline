@@ -11,8 +11,8 @@ import UniformTypeIdentifiers
 
 extension UTType {
     static var projectFile = UTType(
-        exportedAs: "com.helinaxli.timeline.timeline",
-        conformingTo: .data
+        exportedAs: "com.helinaxli.timeline.tl",
+        conformingTo: .package
     )
 }
 
