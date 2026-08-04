@@ -15,16 +15,17 @@ class Event: Identifiable {
     var year: Int
     var month: Int
     var day: Int
-    var details: String
-    var characters: [StoryChar] // References characters involved
     
-    init(id: UUID = UUID(), title: String, year: Int, month: Int, day: Int, details: String, characters: [StoryChar] = []) {
+    var details: String = ""
+    @Relationship(inverse: \StoryChar.events)
+    var characters: [StoryChar] = []
+    var arcs: [Arc] = []
+    
+    init(id: UUID = UUID(), title: String, year: Int, month: Int, day: Int) {
         self.id = id
         self.title = title
         self.year = year
         self.month = month
         self.day = day
-        self.details = details
-        self.characters = characters
     }
 }

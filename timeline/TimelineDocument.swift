@@ -11,10 +11,13 @@ import SwiftData
 @Model
 class TimelineDocument: Identifiable {
     var title: String
-    var arcs: [Arc]
+    @Relationship(deleteRule: .cascade) var config: TimelineConfig
+    @Relationship(deleteRule: .cascade) var arcs: [Arc] = []
+    @Relationship(deleteRule: .cascade) var events: [Event] = []
+    @Relationship(deleteRule: .cascade) var characters: [Character] = []
 
-    init(id: UUID = UUID(), title: String, events: [Event], arcs: [Arc]) {
+    init(title: String, config: TimelineConfig) {
         self.title = title
-        self.arcs = arcs
+        self.config = config
     }
 }

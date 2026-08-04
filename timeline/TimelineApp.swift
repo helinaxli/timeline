@@ -20,7 +20,7 @@ extension UTType {
 struct TimelineApp: App {
     var body: some Scene {
         DocumentGroup(editing: TimelineDocument.self, contentType: .projectFile) {
-            ContentView()
+            TimelineDocumentView()
         }
     }
 }
