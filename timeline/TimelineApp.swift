@@ -23,7 +23,7 @@ struct TimelineApp: App {
             editing: TimelineDocument.self,
             contentType: .projectFile,
             editor: {
-                TimelineDocumentView()
+                TimelineDocumentContainerView()
             },
             prepareDocument: { context in
                 let config = TimelineConfig()
@@ -31,5 +31,6 @@ struct TimelineApp: App {
                 context.insert(document)
             }
         )
+        .defaultSize(width: 1200, height: 800)
     }
 }

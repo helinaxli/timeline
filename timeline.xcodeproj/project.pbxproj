@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		99EB2E9B30208017005E3527 /* timeline.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = timeline.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		99EB2E9B30208017005E3527 /* timeline.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = timeline.app; path = /Users/helinalee/timeline/build/Debug/timeline.app; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -46,16 +46,7 @@
 			isa = PBXGroup;
 			children = (
 				99EB2E9D30208017005E3527 /* timeline */,
-				99EB2E9C30208017005E3527 /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		99EB2E9C30208017005E3527 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				99EB2E9B30208017005E3527 /* timeline.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -108,7 +99,7 @@
 			mainGroup = 99EB2E9230208016005E3527;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 99EB2E9C30208017005E3527 /* Products */;
+			productRefGroup = 99EB2E9230208016005E3527;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (

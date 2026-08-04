@@ -8,22 +8,31 @@
 import SwiftUI
 import SwiftData
 
-struct TimelineDocumentView: View {
-    // @Environment(TimelineDocument.self) private var document: TimelineDocument?
-//     let document: TimelineDocument?
+struct TimelineDocumentContainerView: View {
     
     @Query private var documents: [TimelineDocument]
-    private var document: TimelineDocument? {
-        documents.first
+    var body: some View {
+        if let document = documents.first {
+            // Pass the guaranteed non-optional model down
+            TimelineDocumentView(document: document)
+        } else {
+            // Displays briefly while SwiftData boots up the document context
+            ProgressView("Loading document...")
+        }
     }
-    
+}
+
+struct TimelineDocumentView: View {
+    @Bindable var document: TimelineDocument
     @State private var showSetupSheet = false
+    
+    @State private var isShowingNewEventSheet = false
 
     var body: some View {
         NavigationStack {
             VStack {
-                if let config = document?.config, config.isConfigured {
-                    Text("Timeline Years: \(config.startYear) – \(config.endYear)")
+                if document.config.isConfigured {
+                    Text(document.title)
                         .font(.headline)
                     
                     // Main timeline content goes here
@@ -32,26 +41,39 @@ struct TimelineDocumentView: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            .navigationTitle(document?.title ?? "Untitled")
-            .task(id: document) {
-                checkInitialSetup()
+            // .navigationTitle(document.title)
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Menu("Add New", systemImage: "plus") {
+                        Button("New Character", systemImage: "person.badge.plus.fill") {
+                            // stuff
+                        }
+                        Button("New Event", systemImage: "calendar.badge.plus") {
+                            isShowingNewEventSheet = true
+                        }
+                        Button("New Arc", systemImage: "folder.fill.badge.plus") {
+                            // stuff
+                        }
+                    }
+                }
             }
-            .onChange(of: document?.config.isConfigured) { _, _ in
+            .task(id: document) {
                 checkInitialSetup()
             }
             // Present setup sheet if unconfigured
             .sheet(isPresented: $showSetupSheet) {
-                if let document {
-                    TimelineSetupSheet(document: document, isPresented: $showSetupSheet)
-                        .interactiveDismissDisabled()
-                }
+                TimelineSetupSheet(document: document, isPresented: $showSetupSheet)
+                    .interactiveDismissDisabled()
+            }
+            .sheet(isPresented: $isShowingNewEventSheet) {
+                NewEventSheet(document: document)
             }
         }
     }
 
     private func checkInitialSetup() {
         // If the document's config hasn't been set up yet, show the sheet
-        if let config = document?.config, !config.isConfigured {
+        if !document.config.isConfigured {
             showSetupSheet = true
         }
     }
@@ -76,10 +98,6 @@ struct TimelineSetupSheet: View {
                     .textFieldStyle(.roundedBorder)
                     .padding(.bottom, 8)
                 
-                Text("Note: There is no min. or max. for years.")
-                        .font(.body)
-                        .foregroundStyle(.secondary)
-                
                 TextField("Start Year", value: $document.config.startYear, format: .number)
                     .textFieldStyle(.roundedBorder)
                 TextField("End Year", value: $document.config.endYear, format: .number)
@@ -88,6 +106,9 @@ struct TimelineSetupSheet: View {
                         RoundedRectangle(cornerRadius: 6)
                             .stroke(isYearRangeInvalid ? Color.red : Color.clear, lineWidth: 1)
                     )
+                Text("Note: There is no min. for start year / no max. for end year.")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
                 
                 if isYearRangeInvalid {
                     Label("End year cannot be earlier than start year.", systemImage: "exclamationmark.triangle.fill")
@@ -108,6 +129,6 @@ struct TimelineSetupSheet: View {
             }
         }
         .padding()
-        .frame(minWidth: 350, minHeight: 250) // Essential for macOS sheet sizing
+        .frame(minWidth: 250, minHeight: 250) // Essential for macOS sheet sizing
     }
 }
