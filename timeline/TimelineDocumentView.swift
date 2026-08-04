@@ -66,7 +66,7 @@ struct TimelineDocumentView: View {
                     .interactiveDismissDisabled()
             }
             .sheet(isPresented: $isShowingNewEventSheet) {
-                NewEventSheet(document: document)
+                NewEventSheet(document: document, isPresented: $isShowingNewEventSheet)
             }
         }
     }

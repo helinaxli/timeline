@@ -21,7 +21,7 @@ class Event: Identifiable {
     var characters: [StoryChar] = []
     var arcs: [Arc] = []
     
-    init(id: UUID = UUID()) {
+    init(id: UUID) {
         self.id = id
     }
 }

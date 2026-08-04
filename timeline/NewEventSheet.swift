@@ -11,6 +11,7 @@ import SwiftData
 struct NewEventSheet: View {
     @Bindable var document: TimelineDocument
     @Bindable var event = Event(id: UUID())
+    @Binding var isPresented: Bool
     
     private let labelWidth: CGFloat = 50
     
@@ -46,6 +47,7 @@ struct NewEventSheet: View {
                 Spacer()
                 Button("Create") {
                     document.events.append(event)
+                    isPresented = false
                 }
                 .buttonStyle(.borderedProminent)
             }
