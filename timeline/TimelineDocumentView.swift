@@ -10,7 +10,7 @@ import SwiftData
 
 struct TimelineDocumentView: View {
     // @Environment(TimelineDocument.self) private var document: TimelineDocument?
-    // let document: TimelineDocument?
+//     let document: TimelineDocument?
     
     @Query private var documents: [TimelineDocument]
     private var document: TimelineDocument? {
@@ -69,15 +69,15 @@ struct TimelineSetupSheet: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Configure Timeline")
+            Text("Set Up Your Timeline")
                 .font(.title2)
                 .bold()
             
             Form {
-                Section("Timeline Range") {
-                    Stepper("Start Year: \(config.startYear)", value: $config.startYear)
-                    Stepper("End Year: \(config.endYear)", value: $config.endYear)
-                }
+                TextField("Start Year", value: $config.startYear, format: .number)
+                    .textFieldStyle(.roundedBorder)
+                TextField("End Year", value: $config.endYear, format: .number)
+                    .textFieldStyle(.roundedBorder)
             }
             
             HStack {

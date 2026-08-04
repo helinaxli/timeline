@@ -8,7 +8,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "79AEE5D4-B6D1-4204-BA03-A736F713EEEB"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "timeline/TimelineDocumentView.swift"
@@ -18,50 +18,6 @@
             endingLineNumber = "66"
             landmarkName = "TimelineSetupSheet"
             landmarkType = "14">
-            <Locations>
-               <Location
-                  uuid = "79AEE5D4-B6D1-4204-BA03-A736F713EEEB - 7751863c7dae9e51"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "timeline.TimelineDocumentView.checkInitialSetup() -&gt; ()"
-                  moduleName = "timeline.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/helinalee/timeline/timeline/TimelineDocumentView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "56"
-                  endingLineNumber = "56">
-               </Location>
-               <Location
-                  uuid = "79AEE5D4-B6D1-4204-BA03-A736F713EEEB - 7751863c7dae9e51"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "timeline.TimelineDocumentView.checkInitialSetup() -&gt; ()"
-                  moduleName = "timeline.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/helinalee/timeline/timeline/TimelineDocumentView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "56"
-                  endingLineNumber = "56">
-               </Location>
-               <Location
-                  uuid = "79AEE5D4-B6D1-4204-BA03-A736F713EEEB - 273274907e2f3483"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "timeline.TimelineSetupSheet.init(config: timeline.TimelineConfig, isPresented: SwiftUI.Binding&lt;Swift.Bool&gt;) -&gt; timeline.TimelineSetupSheet"
-                  moduleName = "timeline.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/helinalee/timeline/timeline/TimelineDocumentView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "66"
-                  endingLineNumber = "66">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

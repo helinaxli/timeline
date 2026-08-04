@@ -19,8 +19,17 @@ extension UTType {
 @main
 struct TimelineApp: App {
     var body: some Scene {
-        DocumentGroup(editing: TimelineDocument.self, contentType: .projectFile) {
-            TimelineDocumentView()
-        }
+        DocumentGroup(
+            editing: TimelineDocument.self,
+            contentType: .projectFile,
+            editor: {
+                TimelineDocumentView()
+            },
+            prepareDocument: { context in
+                let config = TimelineConfig()
+                let document = TimelineDocument(config: config)
+                context.insert(document)
+            }
+        )
     }
 }
