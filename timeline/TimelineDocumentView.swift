@@ -9,49 +9,54 @@ import SwiftUI
 import SwiftData
 
 struct TimelineDocumentView: View {
-    @Environment(\.document) private var document: TimelineDocument?
+    // @Environment(TimelineDocument.self) private var document: TimelineDocument?
+    // let document: TimelineDocument?
+    
+    @Query private var documents: [TimelineDocument]
+    private var document: TimelineDocument? {
+        documents.first
+    }
+    
     @Query private var configs: [TimelineConfig]
     
     @State private var showSetupSheet = false
-    
-    // Fallback or reference to current config
-    private var currentConfig: TimelineConfig? {
-        configs.first
-    }
 
     var body: some View {
         NavigationStack {
             VStack {
-                if let config = currentConfig, config.isConfigured {
+                if let config = document?.config, config.isConfigured {
                     Text("Timeline Years: \(config.startYear) – \(config.endYear)")
                         .font(.headline)
                     
                     // Main timeline content goes here
                 } else {
                     Text("Setting up your timeline...")
+                        .foregroundStyle(.secondary)
                 }
             }
-            .navigationTitle("Timeline")
-            .onAppear {
+            .navigationTitle(document?.title ?? "Untitled")
+            .task(id: document) {
+                checkInitialSetup()
+            }
+            .task {
+                print("configs:", configs.count)
+            }
+            .onChange(of: document?.config.isConfigured) { _, _ in
                 checkInitialSetup()
             }
             // Present setup sheet if unconfigured
             .sheet(isPresented: $showSetupSheet) {
-                if let config = currentConfig {
+                if let config = document?.config {
                     TimelineSetupSheet(config: config, isPresented: $showSetupSheet)
+                        .interactiveDismissDisabled()
                 }
             }
         }
     }
 
     private func checkInitialSetup() {
-        if configs.isEmpty {
-            // First time opening this blank document: create default config
-            let newConfig = TimelineConfig()
-            modelContext.insert(newConfig)
-            showSetupSheet = true
-        } else if let config = currentConfig, !config.isConfigured {
-            // Config exists but hasn't been completed yet
+        // If the document's config hasn't been set up yet, show the sheet
+        if let config = document?.config, !config.isConfigured {
             showSetupSheet = true
         }
     }

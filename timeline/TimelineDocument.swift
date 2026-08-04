@@ -14,7 +14,7 @@ class TimelineDocument: Identifiable {
     @Relationship(deleteRule: .cascade) var config: TimelineConfig
     @Relationship(deleteRule: .cascade) var arcs: [Arc] = []
     @Relationship(deleteRule: .cascade) var events: [Event] = []
-    @Relationship(deleteRule: .cascade) var characters: [Character] = []
+    @Relationship(deleteRule: .cascade) var characters: [StoryChar] = []
 
     init(title: String, config: TimelineConfig) {
         self.title = title
