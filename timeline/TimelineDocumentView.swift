@@ -17,8 +17,6 @@ struct TimelineDocumentView: View {
         documents.first
     }
     
-    @Query private var configs: [TimelineConfig]
-    
     @State private var showSetupSheet = false
 
     var body: some View {
@@ -38,16 +36,13 @@ struct TimelineDocumentView: View {
             .task(id: document) {
                 checkInitialSetup()
             }
-            .task {
-                print("configs:", configs.count)
-            }
             .onChange(of: document?.config.isConfigured) { _, _ in
                 checkInitialSetup()
             }
             // Present setup sheet if unconfigured
             .sheet(isPresented: $showSetupSheet) {
-                if let config = document?.config {
-                    TimelineSetupSheet(config: config, isPresented: $showSetupSheet)
+                if let document {
+                    TimelineSetupSheet(document: document, isPresented: $showSetupSheet)
                         .interactiveDismissDisabled()
                 }
             }
@@ -64,8 +59,11 @@ struct TimelineDocumentView: View {
 
 // Separate view file or inline struct for the pop-up
 struct TimelineSetupSheet: View {
-    @Bindable var config: TimelineConfig
+    @Bindable var document: TimelineDocument
     @Binding var isPresented: Bool
+    private var isYearRangeInvalid: Bool {
+        document.config.endYear < document.config.startYear
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -74,19 +72,39 @@ struct TimelineSetupSheet: View {
                 .bold()
             
             Form {
-                TextField("Start Year", value: $config.startYear, format: .number)
+                TextField("Title", text: $document.title)
                     .textFieldStyle(.roundedBorder)
-                TextField("End Year", value: $config.endYear, format: .number)
+                    .padding(.bottom, 8)
+                
+                Text("Note: There is no min. or max. for years.")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                
+                TextField("Start Year", value: $document.config.startYear, format: .number)
                     .textFieldStyle(.roundedBorder)
+                TextField("End Year", value: $document.config.endYear, format: .number)
+                    .textFieldStyle(.roundedBorder)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 6)
+                            .stroke(isYearRangeInvalid ? Color.red : Color.clear, lineWidth: 1)
+                    )
+                
+                if isYearRangeInvalid {
+                    Label("End year cannot be earlier than start year.", systemImage: "exclamationmark.triangle.fill")
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                        .transition(.opacity)
+                }
             }
             
             HStack {
                 Spacer()
                 Button("Get Started") {
-                    config.isConfigured = true
+                    document.config.isConfigured = true
                     isPresented = false
                 }
                 .buttonStyle(.borderedProminent)
+                .disabled(isYearRangeInvalid)
             }
         }
         .padding()
