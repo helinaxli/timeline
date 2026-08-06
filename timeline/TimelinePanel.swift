@@ -113,19 +113,19 @@ struct TimelinePanel: View {
 }
 
 struct NodeCardView: View {
-    let node: TimelineNode
+    let node: Event
     
     private var formattedDate: String {
-        let yearStr = node.event.year.map(String.init) ?? "YYYY"
-        let monthStr = node.event.month.map(String.init) ?? "MM"
-        let dayStr = node.event.day.map(String.init) ?? "DD"
+        let yearStr = node.year.map(String.init) ?? "YYYY"
+        let monthStr = node.month.map(String.init) ?? "MM"
+        let dayStr = node.day.map(String.init) ?? "DD"
         
         return "\(yearStr) / \(monthStr) / \(dayStr)"
     }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(node.event.title)
+            Text(node.title)
                 .font(.headline)
             Text(formattedDate)
                 .font(.body)

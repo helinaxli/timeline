@@ -15,6 +15,7 @@ class Event: Identifiable {
     var year: Int?
     var month: Int?
     var day: Int?
+    var side: String = "left"
     
     var details: String = ""
     @Relationship(inverse: \StoryChar.events)
