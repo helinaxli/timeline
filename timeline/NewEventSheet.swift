@@ -64,7 +64,7 @@ struct NewEventSheet: View {
             HStack {
                 Spacer()
                 Button("Create") {
-                    document.add(event: event)
+                    document.addEvent(event: event)
                     isPresented = false
                 }
                 .buttonStyle(.borderedProminent)

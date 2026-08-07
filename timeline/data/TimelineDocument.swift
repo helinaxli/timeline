@@ -43,7 +43,7 @@ class TimelineDocument {
         config.isConfigured = true
     }
     
-    func add(event: Event) {
+    func addEvent(event: Event) {
         // 1. Append to document master list
         self.events.append(event)
         

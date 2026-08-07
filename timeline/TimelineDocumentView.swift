@@ -27,6 +27,7 @@ struct TimelineDocumentView: View {
     @State private var showSetupSheet = false
     
     @State private var isShowingNewEventSheet = false
+    @State private var isShowingNewStoryCharEventSheet = false
 
     var body: some View {
         NavigationStack {
@@ -43,7 +44,7 @@ struct TimelineDocumentView: View {
                 ToolbarItem(placement: .primaryAction) {
                     Menu("Add New", systemImage: "plus") {
                         Button("New Character", systemImage: "person.badge.plus.fill") {
-                            // stuff
+                            isShowingNewStoryCharEventSheet = true
                         }
                         Button("New Event", systemImage: "calendar.badge.plus") {
                             isShowingNewEventSheet = true
@@ -64,6 +65,9 @@ struct TimelineDocumentView: View {
             }
             .sheet(isPresented: $isShowingNewEventSheet) {
                 NewEventSheet(document: document, isPresented: $isShowingNewEventSheet)
+            }
+            .sheet(isPresented: $isShowingNewStoryCharEventSheet) {
+                NewStoryCharSheet(document: document, isPresented: $isShowingNewStoryCharEventSheet)
             }
         }
     }
