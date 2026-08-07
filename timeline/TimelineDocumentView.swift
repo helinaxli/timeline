@@ -106,9 +106,6 @@ struct TimelineSetupSheet: View {
                         RoundedRectangle(cornerRadius: 6)
                             .stroke(isYearRangeInvalid ? Color.red : Color.clear, lineWidth: 1)
                     )
-                Text("Note: There is no min. for start year / no max. for end year.")
-                        .font(.body)
-                        .foregroundStyle(.secondary)
                 
                 if isYearRangeInvalid {
                     Label("End year cannot be earlier than start year.", systemImage: "exclamationmark.triangle.fill")
@@ -116,12 +113,30 @@ struct TimelineSetupSheet: View {
                         .foregroundStyle(.red)
                         .transition(.opacity)
                 }
+                Text("There is no min. for start year / no max. for end year.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .padding(.bottom, 8)
+                
+                TextField("Months Per Year", value: $document.config.numMonthsPerYear, format: .number)
+                    .textFieldStyle(.roundedBorder)
+                Text("This can be adjusted for each year later.")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                        .padding(.bottom, 8)
+                
+                TextField("Days Per Month", value: $document.config.numDaysPerMonth, format: .number)
+                    .textFieldStyle(.roundedBorder)
+                Text("This can be adjusted for each month later.")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                        .padding(.bottom, 8)
             }
             
             HStack {
                 Spacer()
                 Button("Get Started") {
-                    document.config.isConfigured = true
+                    document.configureTimeline()
                     isPresented = false
                 }
                 .buttonStyle(.borderedProminent)

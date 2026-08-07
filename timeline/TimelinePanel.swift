@@ -29,7 +29,7 @@ struct TimelinePanel: View {
         ScrollView([.vertical, .horizontal]) {
             ZStack(alignment: .topLeading) {
                 timelineSpine
-                nodeOverlay
+                nodeOverlay(document: document)
             }
             .frame(width: 500, height: totalHeight + 100)
             .padding(.top, 40)
@@ -64,12 +64,12 @@ struct TimelinePanel: View {
         }
     }
     
-    private var nodeOverlay: some View {
-        ForEach(nodes) { node in
-            let yPos = yPosition(for: node.date)
+    private func nodeOverlay(document: TimelineDocument) -> some View {
+        ForEach(document.events) { node in
+            let yPos = yPosition(event: node)
             
             Group {
-                if node.isLeftSide {
+                if node.side == "left" {
                     // Node on the LEFT side of timeline
                     HStack(spacing: 0) {
                         NodeCardView(node: node)
@@ -100,15 +100,47 @@ struct TimelinePanel: View {
         }
     }
     
-    private func yPosition(for date: Date) -> CGFloat {
-        let calendar = Calendar.current
-        let year = calendar.component(.year, from: date)
-        let dayOfYear = calendar.ordinality(of: .day, in: .year, for: date) ?? 1
+    private func yPosition(event: Event) -> CGFloat {
+        let yearIndex = event.year - startYear
         
-        let yearFraction = CGFloat(dayOfYear) / 365.0
-        let effectiveYear = CGFloat(year - startYear) + yearFraction
+        // 1. Base year offset and safe unwrapping of matchingYear
+        guard document.years.indices.contains(yearIndex) else {
+            return CGFloat(yearIndex) * pointsPerYear
+        }
         
-        return effectiveYear * pointsPerYear
+        let matchingYear = document.years[yearIndex]
+        guard !matchingYear.months.isEmpty, matchingYear.numMonths > 0 else {
+            return CGFloat(yearIndex) * pointsPerYear
+        }
+        
+        var yPos = CGFloat(yearIndex) * pointsPerYear
+        let totalMonthsInYear = CGFloat(matchingYear.numMonths)
+        
+        // 2. Month offset
+        if let monthNum = event.month {
+            let monthIndex = monthNum - 1
+            let elapsedMonths = CGFloat(max(0, monthIndex))
+            let monthFraction = elapsedMonths / totalMonthsInYear
+            yPos += monthFraction * pointsPerYear
+            
+            // 3. Day offset within that month
+            if let dayNum = event.day {
+                var daysInMonth: CGFloat = 30
+                
+                if matchingYear.months.indices.contains(monthIndex) {
+                    let matchingMonth = matchingYear.months[monthIndex]
+                    daysInMonth = CGFloat(matchingMonth.numDays)
+                }
+                
+                if daysInMonth > 0 {
+                    let dayProgressWithinMonth = CGFloat(max(0, dayNum - 1)) / daysInMonth
+                    let dayFractionInYear = dayProgressWithinMonth / totalMonthsInYear
+                    yPos += dayFractionInYear * pointsPerYear
+                }
+            }
+        }
+        
+        return yPos
     }
 }
 
@@ -116,7 +148,7 @@ struct NodeCardView: View {
     let node: Event
     
     private var formattedDate: String {
-        let yearStr = node.year.map(String.init) ?? "YYYY"
+        let yearStr = String(node.year)
         let monthStr = node.month.map(String.init) ?? "MM"
         let dayStr = node.day.map(String.init) ?? "DD"
         
@@ -131,7 +163,7 @@ struct NodeCardView: View {
                 .font(.body)
         }
         .padding(10)
-        .background(Color(uiColor: .secondarySystemBackground))
+        .background(.secondary)
         .cornerRadius(8)
         .overlay(
             RoundedRectangle(cornerRadius: 8)

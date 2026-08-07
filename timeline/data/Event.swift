@@ -12,7 +12,7 @@ import SwiftData
 class Event: Identifiable {
     var id: UUID
     var title: String = ""
-    var year: Int?
+    var year: Int
     var month: Int?
     var day: Int?
     var side: String = "left"
@@ -22,7 +22,8 @@ class Event: Identifiable {
     var characters: [StoryChar] = []
     var arcs: [Arc] = []
     
-    init(id: UUID) {
+    init(id: UUID, year: Int = 2026) {
+        self.year = year
         self.id = id
     }
 }

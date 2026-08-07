@@ -12,6 +12,9 @@ struct NewEventSheet: View {
     @Bindable var document: TimelineDocument
     @Bindable var event = Event(id: UUID())
     @Binding var isPresented: Bool
+    private var isYearInvalid: Bool {
+        event.year < document.config.startYear || event.year > document.config.endYear
+    }
     
     private let labelWidth: CGFloat = 50
     
@@ -31,6 +34,17 @@ struct NewEventSheet: View {
                     .multilineTextAlignment(.center)
                     .textFieldStyle(.roundedBorder)
                     .frame(width: 120)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 6)
+                            .stroke(isYearInvalid ? Color.red : Color.clear, lineWidth: 1)
+                    )
+                
+                if isYearInvalid {
+                    Label("Year not in range.", systemImage: "exclamationmark.triangle.fill")
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                        .transition(.opacity)
+                }
                 
                 TextField("Month", value: $event.month, format: .number, prompt: Text("Month"))
                     .multilineTextAlignment(.center)
@@ -46,10 +60,11 @@ struct NewEventSheet: View {
             HStack {
                 Spacer()
                 Button("Create") {
-                    document.events.append(event)
+                    document.add(event: event)
                     isPresented = false
                 }
                 .buttonStyle(.borderedProminent)
+                .disabled(isYearInvalid)
             }
         }
         .padding(20)
