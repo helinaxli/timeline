@@ -9,11 +9,12 @@ import SwiftUI
 
 struct TimelinePanel: View {
     let document: TimelineDocument
+    let topInset: CGFloat = 20
     
     @State private var pointsPerYear: CGFloat = 80.0
         
     // Axis layout properties
-    private let axisX: CGFloat = 200 // X-coordinate of vertical ruler
+    private let axisX: CGFloat = 250 // X-coordinate of vertical ruler
     private let tickLength: CGFloat = 10
     var startYear: Int {document.config.startYear}
     var endYear: Int {document.config.endYear}
@@ -25,6 +26,9 @@ struct TimelinePanel: View {
     }
     
     var body: some View {
+        Text(document.title)
+            .font(.title)
+            .padding(.top, 24)
         
         ScrollView([.vertical, .horizontal]) {
             ZStack(alignment: .topLeading) {
@@ -39,14 +43,14 @@ struct TimelinePanel: View {
         Canvas { context, size in
             // Main vertical line
             var path = Path()
-            path.move(to: CGPoint(x: axisX, y: 0))
-            path.addLine(to: CGPoint(x: axisX, y: totalHeight))
+            path.move(to: CGPoint(x: axisX, y: topInset))
+            path.addLine(to: CGPoint(x: axisX, y: topInset + totalHeight))
             context.stroke(path, with: .color(.primary), lineWidth: 2)
             
             // Draw Year Tickmarks
             for yearOffset in 0...totalYears {
                 let currentYear = startYear + yearOffset
-                let yPos = CGFloat(yearOffset) * pointsPerYear
+                let yPos = topInset + (CGFloat(yearOffset) * pointsPerYear)
                 
                 // Tick line
                 var tickPath = Path()
@@ -59,7 +63,7 @@ struct TimelinePanel: View {
                     .font(.caption)
                     .bold()
                 
-                context.draw(text, at: CGPoint(x: axisX - tickLength - 20, y: yPos), anchor: .trailing)
+                context.draw(text, at: CGPoint(x: axisX - tickLength - 10, y: yPos), anchor: .trailing)
             }
         }
     }
@@ -79,7 +83,7 @@ struct TimelinePanel: View {
                             .fill(Color.secondary)
                             .frame(height: 1)
                     }
-                    .frame(width: axisX - 20) // Stops before tick labels
+                    .frame(width: axisX - 10) // Stops before tick labels
                     .position(x: (axisX - 20) / 2, y: yPos)
                     
                 } else {
@@ -140,7 +144,7 @@ struct TimelinePanel: View {
             }
         }
         
-        return yPos
+        return topInset + yPos
     }
 }
 
@@ -161,6 +165,7 @@ struct NodeCardView: View {
                 .font(.headline)
             Text(formattedDate)
                 .font(.body)
+            
         }
         .padding(10)
         .background(.secondary)

@@ -57,6 +57,10 @@ struct NewEventSheet: View {
                     .frame(width: 80)
             }
             
+            TextField("Event Details", text: $event.details, axis: .vertical)
+                .textFieldStyle(.roundedBorder)
+                .padding()
+            
             HStack {
                 Spacer()
                 Button("Create") {

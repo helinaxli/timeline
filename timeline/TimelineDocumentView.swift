@@ -32,10 +32,7 @@ struct TimelineDocumentView: View {
         NavigationStack {
             VStack {
                 if document.config.isConfigured {
-                    Text(document.title)
-                        .font(.headline)
-                    
-                    // Main timeline content goes here
+                    TimelinePanel(document: document)
                 } else {
                     Text("Setting up your timeline...")
                         .foregroundStyle(.secondary)
@@ -120,30 +117,47 @@ struct TimelineSetupSheet: View {
                 
                 TextField("Months Per Year", value: $document.config.numMonthsPerYear, format: .number)
                     .textFieldStyle(.roundedBorder)
-                Text("This can be adjusted for each year later.")
-                        .font(.body)
+                Text("This can customize this for each year later.")
+                        .font(.caption)
                         .foregroundStyle(.secondary)
-                        .padding(.bottom, 8)
                 
                 TextField("Days Per Month", value: $document.config.numDaysPerMonth, format: .number)
                     .textFieldStyle(.roundedBorder)
-                Text("This can be adjusted for each month later.")
-                        .font(.body)
+                Text("You can customize this for each month later.")
+                        .font(.caption)
                         .foregroundStyle(.secondary)
-                        .padding(.bottom, 8)
             }
             
             HStack {
+                Button("Cancel", role: .cancel) {
+                    cancelSetup()
+                }
+                .keyboardShortcut(.escape, modifiers: [])
+                
                 Spacer()
+                
                 Button("Get Started") {
                     document.configureTimeline()
                     isPresented = false
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(isYearRangeInvalid)
+                .keyboardShortcut(.defaultAction)
             }
         }
         .padding()
         .frame(minWidth: 250, minHeight: 250) // Essential for macOS sheet sizing
+    }
+    
+    private func cancelSetup() {
+        isPresented = false
+        
+        #if os(macOS)
+        // If this sheet was opened inside a new, unconfigured DocumentGroup window,
+        // closing the window returns the user to the macOS Open/Welcome dialog.
+        NSApp.keyWindow?.close()
+        #else
+        dismiss()
+        #endif
     }
 }

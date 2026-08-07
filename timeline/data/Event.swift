@@ -15,15 +15,16 @@ class Event: Identifiable {
     var year: Int
     var month: Int?
     var day: Int?
-    var side: String = "left"
-    
+    var side: String
     var details: String = ""
+    
     @Relationship(inverse: \StoryChar.events)
     var characters: [StoryChar] = []
     var arcs: [Arc] = []
     
-    init(id: UUID, year: Int = 2026) {
+    init(id: UUID, year: Int = 2026, side: String = "left") {
         self.year = year
         self.id = id
+        self.side = side
     }
 }
