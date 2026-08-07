@@ -74,31 +74,26 @@ struct TimelinePanel: View {
             
             Group {
                 if node.side == "left" {
-                    // Node on the LEFT side of timeline
                     HStack(spacing: 0) {
                         NodeCardView(node: node)
                         
-                        // Connector line from Node to Center Axis
                         Rectangle()
                             .fill(Color.secondary)
                             .frame(height: 1)
                     }
-                    .frame(width: axisX - 10) // Stops before tick labels
+                    // Let HStack size dynamically or provide an expanded frame
                     .position(x: (axisX - 20) / 2, y: yPos)
                     
                 } else {
-                    // Node on the RIGHT side of timeline
                     HStack(spacing: 0) {
-                        // Connector line
                         Rectangle()
                             .fill(Color.secondary)
                             .frame(width: 40, height: 1)
                         
                         NodeCardView(node: node)
-                        Spacer()
                     }
-                    .frame(width: 250)
-                    .position(x: axisX + 120, y: yPos)
+                    // Position relative to axis without hard-capping total width
+                    .position(x: axisX + 180, y: yPos)
                 }
             }
         }
@@ -151,28 +146,52 @@ struct TimelinePanel: View {
 struct NodeCardView: View {
     let node: Event
     
+    // Default size is significantly larger (e.g., 280x140 instead of automatic hugging)
+    @State private var cardSize: CGSize = CGSize(width: 210, height: 140)
+    
     private var formattedDate: String {
         let yearStr = String(node.year)
         let monthStr = node.month.map(String.init) ?? "MM"
         let dayStr = node.day.map(String.init) ?? "DD"
-        
         return "\(yearStr) / \(monthStr) / \(dayStr)"
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 8) {
             Text(node.title)
-                .font(.headline)
+                .font(.title2)
+                .bold()
+            
             Text(formattedDate)
                 .font(.body)
             
+            Text(node.details)
+                .font(.body)
         }
-        .padding(10)
+        .padding(16)
+        .frame(width: cardSize.width, height: cardSize.height, alignment: .topLeading)
         .background(.secondary)
-        .cornerRadius(8)
+        .cornerRadius(12)
         .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.accentColor, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.accentColor, lineWidth: 2)
         )
+        // Resize handle icon in the bottom-right corner
+        .overlay(alignment: .bottomTrailing) {
+            Image(systemName: "line.3.crossed.swirling.angle.45") // Or "arrow.up.left.and.down.right.and.arrow.up.right.and.down.left"
+                .font(.caption)
+                .foregroundColor(.white.opacity(0.7))
+                .padding(6)
+                .contentShape(Rectangle())
+                .gesture(
+                    DragGesture()
+                        .onChanged { value in
+                            // Expand/shrink based on drag translation
+                            let newWidth = max(210, cardSize.width + value.translation.width)
+                            let newHeight = max(70, cardSize.height + value.translation.height)
+                            cardSize = CGSize(width: newWidth, height: newHeight)
+                        }
+                )
+        }
     }
 }
