@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TimelinePanel: View {
-    let document: TimelineDocument
+    @Bindable var document: TimelineDocument
     let topInset: CGFloat = 20
     
     @State private var pointsPerYear: CGFloat = 80.0
@@ -33,7 +33,7 @@ struct TimelinePanel: View {
         ScrollView([.vertical, .horizontal]) {
             ZStack(alignment: .topLeading) {
                 timelineSpine
-                nodeOverlay(document: document)
+                nodeOverlay()
             }
             .frame(width: 500, height: totalHeight + 100)
             .padding(.top, 40)
@@ -68,21 +68,22 @@ struct TimelinePanel: View {
         }
     }
     
-    private func nodeOverlay(document: TimelineDocument) -> some View {
-        ForEach(document.events) { node in
+    private func nodeOverlay() -> some View {
+        ForEach($document.events) { $node in
             let yPos = yPosition(event: node)
             
             Group {
                 if node.side == "left" {
                     HStack(spacing: 0) {
-                        NodeCardView(node: node)
+                        NodeCardView(node: node, cardSize: $node.size)
                         
                         Rectangle()
                             .fill(Color.secondary)
                             .frame(height: 1)
                     }
                     // Let HStack size dynamically or provide an expanded frame
-                    .position(x: (axisX - 20) / 2, y: yPos)
+                    .frame(width: axisX, alignment: .trailing)
+                    .position(x: axisX / 2, y: yPos)
                     
                 } else {
                     HStack(spacing: 0) {
@@ -90,7 +91,7 @@ struct TimelinePanel: View {
                             .fill(Color.secondary)
                             .frame(width: 40, height: 1)
                         
-                        NodeCardView(node: node)
+                        NodeCardView(node: node, cardSize: $node.size)
                     }
                     // Position relative to axis without hard-capping total width
                     .position(x: axisX + 180, y: yPos)
@@ -145,26 +146,20 @@ struct TimelinePanel: View {
 
 struct NodeCardView: View {
     let node: Event
-    
-    // Default size is significantly larger (e.g., 280x140 instead of automatic hugging)
-    @State private var cardSize: CGSize = CGSize(width: 210, height: 140)
-    
-    private var formattedDate: String {
-        let yearStr = String(node.year)
-        let monthStr = node.month.map(String.init) ?? "MM"
-        let dayStr = node.day.map(String.init) ?? "DD"
-        return "\(yearStr) / \(monthStr) / \(dayStr)"
-    }
-    
+    @Binding var cardSize: CGSize
+
+    // @Binding private var cardSize: CGSize = CGSize(width: 180, height: 90)
+    // Minimum dimensions
+    private let minWidth: CGFloat = 180
+    private let minHeight: CGFloat = 90
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(node.title)
                 .font(.title2)
                 .bold()
-            
             Text(formattedDate)
                 .font(.body)
-            
             Text(node.details)
                 .font(.body)
         }
@@ -176,22 +171,32 @@ struct NodeCardView: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(Color.accentColor, lineWidth: 2)
         )
-        // Resize handle icon in the bottom-right corner
-        .overlay(alignment: .bottomTrailing) {
-            Image(systemName: "line.3.crossed.swirling.angle.45") // Or "arrow.up.left.and.down.right.and.arrow.up.right.and.down.left"
-                .font(.caption)
-                .foregroundColor(.white.opacity(0.7))
-                .padding(6)
-                .contentShape(Rectangle())
-                .gesture(
-                    DragGesture()
-                        .onChanged { value in
-                            // Expand/shrink based on drag translation
-                            let newWidth = max(210, cardSize.width + value.translation.width)
-                            let newHeight = max(70, cardSize.height + value.translation.height)
-                            cardSize = CGSize(width: newWidth, height: newHeight)
-                        }
-                )
-        }
+        // Four corner handles
+        .overlay(alignment: .topLeading) { cornerHandle(xMultiplier: -1, yMultiplier: -1) }
+        .overlay(alignment: .topTrailing) { cornerHandle(xMultiplier: 1, yMultiplier: -1) }
+        .overlay(alignment: .bottomLeading) { cornerHandle(xMultiplier: -1, yMultiplier: 1) }
+        .overlay(alignment: .bottomTrailing) { cornerHandle(xMultiplier: 1, yMultiplier: 1) }
+    }
+
+    // Helper view for interactive corner hit-boxes
+    private func cornerHandle(xMultiplier: CGFloat, yMultiplier: CGFloat) -> some View {
+        Color.clear
+            .frame(width: 24, height: 24) // Target area for touch/click
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        let deltaW = value.translation.width * xMultiplier
+                        let deltaH = value.translation.height * yMultiplier
+                        cardSize = CGSize(
+                            width: max(minWidth, cardSize.width + deltaW),
+                            height: max(minHeight, cardSize.height + deltaH)
+                        )
+                    }
+            )
+    }
+
+    private var formattedDate: String {
+        "\(node.year) / \(node.month.map(String.init) ?? "MM") / \(node.day.map(String.init) ?? "DD")"
     }
 }

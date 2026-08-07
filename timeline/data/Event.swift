@@ -18,6 +18,17 @@ class Event: Identifiable {
     var side: String
     var details: String = ""
     
+    var width: CGFloat = 280
+    var height: CGFloat = 140
+    
+    var size: CGSize {
+        get { CGSize(width: width, height: height) }
+        set {
+            width = newValue.width
+            height = newValue.height
+        }
+    }
+    
     @Relationship(inverse: \StoryChar.events)
     var characters: [StoryChar] = []
     var arcs: [Arc] = []
