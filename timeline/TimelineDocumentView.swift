@@ -42,6 +42,9 @@ struct TimelineDocumentView: View {
             // .navigationTitle(document.title)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
+                    Button("Character View", systemImage: "person.fill") {
+                        CharacterView(document: document)
+                    }
                     Menu("Add New", systemImage: "plus") {
                         Button("New Character", systemImage: "person.badge.plus.fill") {
                             isShowingNewStoryCharEventSheet = true
