@@ -42,18 +42,23 @@ struct TimelineDocumentView: View {
             // .navigationTitle(document.title)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button("Character View", systemImage: "person.fill") {
-                        CharacterView(document: document)
-                    }
-                    Menu("Add New", systemImage: "plus") {
-                        Button("New Character", systemImage: "person.badge.plus.fill") {
-                            isShowingNewStoryCharEventSheet = true
+                    HStack {
+                        NavigationLink {
+                            CharacterView(document: document)
+                        } label: {
+                            Label("Character View", systemImage: "person.fill")
                         }
-                        Button("New Event", systemImage: "calendar.badge.plus") {
-                            isShowingNewEventSheet = true
-                        }
-                        Button("New Arc", systemImage: "folder.fill.badge.plus") {
-                            // stuff
+                        
+                        Menu("Add New", systemImage: "plus") {
+                            Button("New Character", systemImage: "person.badge.plus.fill") {
+                                isShowingNewStoryCharEventSheet = true
+                            }
+                            Button("New Event", systemImage: "calendar.badge.plus") {
+                                isShowingNewEventSheet = true
+                            }
+                            Button("New Arc", systemImage: "folder.fill.badge.plus") {
+                                // stuff
+                            }
                         }
                     }
                 }
