@@ -13,6 +13,9 @@ struct CharacterView: View {
     @State private var isShowingNewEventSheet = false
     @State private var isShowingNewStoryCharEventSheet = false
     
+    // Track the specific character being edited
+    @State private var editingCharacter: StoryChar? = nil
+    
     var body: some View {
         NavigationStack {
             Text("Characters")
@@ -22,7 +25,16 @@ struct CharacterView: View {
             ScrollView([.vertical, .horizontal]) {
                 VStack(spacing: 10) {
                     ForEach($document.characters) { $node in
-                        CharCardView(node: node)
+                        CharCardView(
+                            node: node,
+                            document: document,
+                            onEdit: {
+                                editingCharacter = node
+                            },
+                            onDelete: {
+                                deleteCharacter(node)
+                            }
+                        )
                     }
                 }
             }
@@ -41,22 +53,38 @@ struct CharacterView: View {
                     }
                 }
             }
-            .sheet(isPresented: $isShowingNewEventSheet) {
-                NewEventSheet(document: document, isPresented: $isShowingNewEventSheet)
-            }
+            // Sheet for creating a new character
             .sheet(isPresented: $isShowingNewStoryCharEventSheet) {
                 NewStoryCharSheet(document: document, isPresented: $isShowingNewStoryCharEventSheet)
             }
+            // Sheet for editing an existing character (presents when editingCharacter != nil)
+            .sheet(item: $editingCharacter) { character in
+                // Pass the character to edit into your sheet
+                NewStoryCharSheet(document: document, isPresented: $isShowingNewStoryCharEventSheet, characterToEdit: character)
+            }
+            .sheet(isPresented: $isShowingNewEventSheet) {
+                NewEventSheet(document: document, isPresented: $isShowingNewEventSheet)
+            }
+        }
+    }
+    
+    private func deleteCharacter(_ character: StoryChar) {
+        withAnimation {
+            document.characters.removeAll { $0.id == character.id }
         }
     }
 }
 
 struct CharCardView: View {
     let node: StoryChar
-    
+    let document: TimelineDocument
+
+    var onEdit: (() -> Void)? = nil
+    var onDelete: (() -> Void)? = nil
+
     var body: some View {
-        // 1. Set explicit leading alignment on the VStack
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 12) {
+            // Header: Name + Date
             HStack(spacing: 10) {
                 Text(node.name)
                     .font(.title2)
@@ -64,21 +92,45 @@ struct CharCardView: View {
                 
                 Text(formattedDate)
                     .font(.body)
+                    .foregroundColor(.secondary)
                 
-                Spacer() // Pushes header content to the left
+                Spacer()
             }
             
+            // Content: Background description
             Text(node.background)
                 .font(.body)
-                .multilineTextAlignment(.leading) // Ensures multiline text aligns left
+                .multilineTextAlignment(.leading)
+                .lineLimit(2) // Truncates gracefully if text is too long for the card height
+            
+            // Bottom Action Bar
+            HStack {
+                Spacer()
+                
+                HStack(spacing: 12) {
+                    Button(action: { onEdit?() }) {
+                        Image(systemName: "pencil")
+                            .font(.caption)
+                    }
+                    .accessibilityLabel("Edit")
+                    
+                    Button(role: .destructive, action: { onDelete?() }) {
+                        Image(systemName: "trash")
+                            .font(.caption)
+                    }
+                    .accessibilityLabel("Delete")
+                }
+                .buttonStyle(.borderless)
+            }
         }
         .padding(16)
-        .frame(width: 1000, height: 100, alignment: .topLeading)
-        .background(.secondary)
+        .frame(width: 1000, height: 100) // Fixed width, flexible height
+        // .frame(minHeight: 100) // Ensures consistent minimum height
+        .background(.secondary.opacity(0.2))
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.accentColor, lineWidth: 2)
+                .strokeBorder(Color.accentColor, lineWidth: 2)
         )
     }
     

@@ -169,7 +169,7 @@ struct NodeCardView: View {
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.accentColor, lineWidth: 2)
+                .strokeBorder(Color.accentColor, lineWidth: 2)
         )
         // Four corner handles
         .overlay(alignment: .topLeading) { cornerHandle(xMultiplier: -1, yMultiplier: -1) }

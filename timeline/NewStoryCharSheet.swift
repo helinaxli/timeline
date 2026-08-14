@@ -6,16 +6,28 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct NewStoryCharSheet: View {
     @Bindable var document: TimelineDocument
-    @Bindable var storyc = StoryChar(id: UUID())
     @Binding var isPresented: Bool
+    
+    // Optional character passed in for editing mode
+    var characterToEdit: StoryChar? = nil
+    
+    // Environment property to dismiss the sheet cleanly
+    @Environment(\.dismiss) private var dismiss
+    
+    // Local state for the form inputs
+    @State private var storyc = StoryChar(id: UUID())
+    
+    // Helper to check if we are editing vs creating
+    private var isEditing: Bool {
+        characterToEdit != nil
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("New Character")
+            Text(isEditing ? "Edit Character" : "New Character")
                 .font(.title2)
                 .bold()
             
@@ -47,15 +59,36 @@ struct NewStoryCharSheet: View {
                 .textFieldStyle(.roundedBorder)
             
             HStack {
+                Button("Cancel", role: .cancel) {
+                    dismiss()
+                }
+                
                 Spacer()
-                Button("Create") {
-                    document.characters.append(storyc)
-                    isPresented = false
+                
+                Button(isEditing ? "Save" : "Create") {
+                    saveCharacter()
+                    dismiss()
                 }
                 .buttonStyle(.borderedProminent)
             }
         }
         .padding(20)
         .frame(minWidth: 350, minHeight: 250)
+        .onAppear {
+            // Populate form fields if editing an existing character
+            if let characterToEdit {
+                storyc = characterToEdit
+            }
+        }
+    }
+    
+    private func saveCharacter() {
+        if let index = document.characters.firstIndex(where: { $0.id == storyc.id }) {
+            // Existing character found: update in-place
+            document.characters[index] = storyc
+        } else {
+            // New character: append to list
+            document.characters.append(storyc)
+        }
     }
 }
