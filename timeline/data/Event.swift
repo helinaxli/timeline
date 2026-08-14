@@ -18,8 +18,8 @@ class Event: Identifiable {
     var side: String
     var details: String = ""
     
-    var width: CGFloat = 280
-    var height: CGFloat = 140
+    var width: CGFloat = 180
+    var height: CGFloat = 90
     
     var size: CGSize {
         get { CGSize(width: width, height: height) }
