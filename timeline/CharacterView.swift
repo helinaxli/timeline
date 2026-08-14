@@ -11,7 +11,7 @@ struct CharacterView: View {
     @Bindable var document: TimelineDocument
     
     @State private var isShowingNewEventSheet = false
-    @State private var isShowingNewStoryCharEventSheet = false
+    @State private var isShowingNewStoryCharSheet = false
     
     // Track the specific character being edited
     @State private var editingCharacter: StoryChar? = nil
@@ -42,7 +42,7 @@ struct CharacterView: View {
                 ToolbarItem(placement: .primaryAction) {
                     Menu("Add New", systemImage: "plus") {
                         Button("New Character", systemImage: "person.badge.plus.fill") {
-                            isShowingNewStoryCharEventSheet = true
+                            isShowingNewStoryCharSheet = true
                         }
                         Button("New Event", systemImage: "calendar.badge.plus") {
                             isShowingNewEventSheet = true
@@ -54,13 +54,13 @@ struct CharacterView: View {
                 }
             }
             // Sheet for creating a new character
-            .sheet(isPresented: $isShowingNewStoryCharEventSheet) {
-                NewStoryCharSheet(document: document, isPresented: $isShowingNewStoryCharEventSheet)
+            .sheet(isPresented: $isShowingNewStoryCharSheet) {
+                NewStoryCharSheet(document: document, isPresented: $isShowingNewStoryCharSheet)
             }
             // Sheet for editing an existing character (presents when editingCharacter != nil)
             .sheet(item: $editingCharacter) { character in
                 // Pass the character to edit into your sheet
-                NewStoryCharSheet(document: document, isPresented: $isShowingNewStoryCharEventSheet, characterToEdit: character)
+                NewStoryCharSheet(document: document, isPresented: $isShowingNewStoryCharSheet, characterToEdit: character)
             }
             .sheet(isPresented: $isShowingNewEventSheet) {
                 NewEventSheet(document: document, isPresented: $isShowingNewEventSheet)

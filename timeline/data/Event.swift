@@ -29,6 +29,8 @@ class Event: Identifiable {
         }
     }
     
+    var xOffset: CGFloat = 0.0
+    
     @Relationship(inverse: \StoryChar.events)
     var characters: [StoryChar] = []
     var arcs: [Arc] = []
