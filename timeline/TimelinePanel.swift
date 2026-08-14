@@ -9,8 +9,9 @@ import SwiftUI
 
 struct TimelinePanel: View {
     @Bindable var document: TimelineDocument
-    let topInset: CGFloat = 20
+    @Environment(\.undoManager) private var undoManager
     
+    let topInset: CGFloat = 20
     @State private var pointsPerYear: CGFloat = 80.0
         
     // Axis layout properties
@@ -68,35 +69,80 @@ struct TimelinePanel: View {
         }
     }
     
+    // Add `@GestureState` inside TimelinePanel to smoothly track active drags without accumulation bugs
+    @GestureState private var dragTranslations: [UUID: CGFloat] = [:]
+
     private func nodeOverlay() -> some View {
         ForEach($document.events) { $node in
             let yPos = yPosition(event: node)
+            let isLeft = node.side == "left"
             
-            Group {
-                if node.side == "left" {
-                    HStack(spacing: 0) {
-                        NodeCardView(node: node, cardSize: $node.size)
-                        
-                        Rectangle()
-                            .fill(Color.secondary)
-                            .frame(height: 1)
-                    }
-                    // Let HStack size dynamically or provide an expanded frame
-                    .frame(width: axisX, alignment: .trailing)
-                    .position(x: axisX / 2, y: yPos)
-                    
+            // Active translation during continuous dragging
+            let activeTranslation = dragTranslations[node.id] ?? 0
+            
+            // Calculate raw offset including drag
+            let rawOffset = node.xOffset + activeTranslation
+            
+            // Clamp offsets so left cards stay <= 0 and right cards stay >= 0, plus screen bounds padding
+            let clampedOffset: CGFloat = {
+                if isLeft {
+                    return min(0, max(-axisX + 50, rawOffset))
                 } else {
-                    HStack(spacing: 0) {
-                        Rectangle()
-                            .fill(Color.secondary)
-                            .frame(width: 40, height: 1)
-                        
-                        NodeCardView(node: node, cardSize: $node.size)
-                    }
-                    // Position relative to axis without hard-capping total width
-                    .position(x: axisX + 180, y: yPos)
+                    return max(0, min(800 - axisX - 50, rawOffset))
+                }
+            }()
+            
+            // Base line length + extension as card moves outward
+            let baseLineWidth: CGFloat = 40
+            let extraDistance = isLeft ? -clampedOffset : clampedOffset
+            let connectorWidth = baseLineWidth + extraDistance
+            
+            ZStack {
+                if isLeft {
+                    // 1. Connector line anchored directly onto axisX
+                    Rectangle()
+                        .fill(Color.secondary)
+                        .frame(width: connectorWidth, height: 2)
+                        .position(x: axisX - (connectorWidth / 2), y: yPos)
+                    
+                    // 2. Card positioned at the outer end of the connector line
+                    NodeCardView(node: $node)
+                        .position(x: axisX - connectorWidth - (node.size.width / 2), y: yPos)
+                } else {
+                    // 1. Connector line anchored directly onto axisX
+                    Rectangle()
+                        .fill(Color.secondary)
+                        .frame(width: connectorWidth, height: 2)
+                        .position(x: axisX + (connectorWidth / 2), y: yPos)
+                    
+                    // 2. Card positioned at the outer end of the connector line
+                    NodeCardView(node: $node)
+                        .position(x: axisX + connectorWidth + (node.size.width / 2), y: yPos)
                 }
             }
+            .gesture(
+                DragGesture()
+                    .updating($dragTranslations) { value, state, _ in
+                        state[node.id] = value.translation.width
+                    }
+                    .onEnded { value in
+                        let finalTranslation = value.translation.width
+                        let proposedOffset = node.xOffset + finalTranslation
+                        
+                        let oldOffset = node.xOffset
+                        let newOffset: CGFloat = isLeft
+                            ? min(0, max(-axisX + 50, proposedOffset))
+                            : max(0, min(800 - axisX - 50, proposedOffset))
+                        
+                        // Apply clean persistent update
+                        node.xOffset = newOffset
+                        
+                        // Register Command + Z undo state
+                        undoManager?.registerUndo(withTarget: document) { _ in
+                            node.xOffset = oldOffset
+                        }
+                    }
+            )
         }
     }
     
@@ -145,11 +191,10 @@ struct TimelinePanel: View {
 }
 
 struct NodeCardView: View {
-    let node: Event
-    @Binding var cardSize: CGSize
+    // 1. Change from 'let node: Event' to '@Binding var node: Event'
+    @Binding var node: Event
+    @Environment(\.undoManager) private var undoManager
 
-    // @Binding private var cardSize: CGSize = CGSize(width: 180, height: 90)
-    // Minimum dimensions
     private let minWidth: CGFloat = 180
     private let minHeight: CGFloat = 90
 
@@ -164,34 +209,44 @@ struct NodeCardView: View {
                 .font(.body)
         }
         .padding(16)
-        .frame(width: cardSize.width, height: cardSize.height, alignment: .topLeading)
-        .background(.secondary)
+        // Access size directly from the node binding
+        .frame(width: node.size.width, height: node.size.height, alignment: .topLeading)
+        .background(Color(.windowBackgroundColor))
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
                 .strokeBorder(Color.accentColor, lineWidth: 2)
         )
-        // Four corner handles
+        // Corner resize handles
         .overlay(alignment: .topLeading) { cornerHandle(xMultiplier: -1, yMultiplier: -1) }
         .overlay(alignment: .topTrailing) { cornerHandle(xMultiplier: 1, yMultiplier: -1) }
         .overlay(alignment: .bottomLeading) { cornerHandle(xMultiplier: -1, yMultiplier: 1) }
         .overlay(alignment: .bottomTrailing) { cornerHandle(xMultiplier: 1, yMultiplier: 1) }
     }
 
-    // Helper view for interactive corner hit-boxes
     private func cornerHandle(xMultiplier: CGFloat, yMultiplier: CGFloat) -> some View {
         Color.clear
-            .frame(width: 24, height: 24) // Target area for touch/click
+            .frame(width: 24, height: 24)
             .contentShape(Rectangle())
             .gesture(
                 DragGesture()
                     .onChanged { value in
                         let deltaW = value.translation.width * xMultiplier
                         let deltaH = value.translation.height * yMultiplier
-                        cardSize = CGSize(
-                            width: max(minWidth, cardSize.width + deltaW),
-                            height: max(minHeight, cardSize.height + deltaH)
+                        
+                        // Mutate node size directly
+                        node.size = CGSize(
+                            width: max(minWidth, node.size.width + deltaW),
+                            height: max(minHeight, node.size.height + deltaH)
                         )
+                    }
+                    .onEnded { value in
+                        let oldSize = node.size
+                        
+                        // Register Undo for resizing (⌘Z)
+                        undoManager?.registerUndo(withTarget: undoManager!) { _ in
+                            node.size = oldSize
+                        }
                     }
             )
     }
