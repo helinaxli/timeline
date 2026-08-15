@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftData
+import SwiftUI
 
 @Model
 class TimelineDocument {
@@ -16,7 +17,7 @@ class TimelineDocument {
     @Relationship(deleteRule: .cascade) var events: [Event] = []
     @Relationship(deleteRule: .cascade) var years: [FantasyYear] = []
     @Relationship(deleteRule: .cascade) var characters: [StoryChar] = []
-    var colorPalette: [Color] = []
+    var colorPalette: [Color] = [blue, cyan, gray, green, indigo, mint, orange, pink, purple, red, teal, yellow]
 
     init(title: String = "Untitled", config: TimelineConfig) {
         self.title = title

@@ -35,20 +35,23 @@ struct NewArcSheet: View {
             VStack(alignment: .leading, spacing: 0) {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 0) {
-                        ForEach(document.colorPalette) { col in
+                        // Fix 1 & 2: Use id: \.self to iterate over [Color] directly
+                        ForEach(document.colorPalette, id: \.self) { color in
                             Button(action: {
-                                // selected color
+                                // Action when color is selected
                             }) {
                                 HStack {
                                     VStack(alignment: .leading, spacing: 2) {
-                                        Text(col.name)
+                                        // Fix 3: Display a label and apply the Color object directly
+                                        Text(color.description.capitalized)
                                             .font(.body)
-                                            .foregroundColor(col)
+                                            .foregroundColor(color)
                                     }
                                     Spacer()
                                 }
                                 .padding(.vertical, 8)
                                 .padding(.horizontal, 12)
+                                .contentShape(Rectangle()) // Makes the whole row area tappable
                             }
                             .buttonStyle(.plain)
                         }
