@@ -67,6 +67,12 @@ struct ArcView: View {
         withAnimation {
             document.arcs.removeAll { $0.id == arc.id }
         }
+        for event in arc.events {
+            event.arcs.removeAll { $0.id == arc.id }
+        }
+        for storyc in arc.characters {
+            storyc.arcs.removeAll { $0.id == arc.id }
+        }
     }
 }
 

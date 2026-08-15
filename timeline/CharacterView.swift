@@ -76,6 +76,12 @@ struct CharacterView: View {
         withAnimation {
             document.characters.removeAll { $0.id == character.id }
         }
+        for event in character.events {
+            event.characters.removeAll { $0.id == character.id }
+        }
+        for arc in character.arcs {
+            arc.characters.removeAll { $0.id == character.id }
+        }
     }
 }
 
@@ -107,6 +113,13 @@ struct CharCardView: View {
                 .multilineTextAlignment(.leading)
                 .lineLimit(2) // Truncates gracefully if text is too long for the card height
             
+            Text("Arcs")
+                .font(.headline)
+            ForEach(node.arcs) { arc in
+                Text(arc.title)
+                    .font(.body)
+            }
+            
             // Bottom Action Bar
             HStack {
                 Spacer()
@@ -128,8 +141,8 @@ struct CharCardView: View {
             }
         }
         .padding(16)
-        .frame(width: 1000, height: 100) // Fixed width, flexible height
-        // .frame(minHeight: 100) // Ensures consistent minimum height
+        .frame(width: 1000) // Fixed width, flexible height
+        .frame(minHeight: 100) // Ensures consistent minimum height
         .background(.secondary.opacity(0.2))
         .cornerRadius(12)
         .overlay(

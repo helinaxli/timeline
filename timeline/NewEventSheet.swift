@@ -90,7 +90,6 @@ struct NewEventSheet: View {
             
             TextField("Event Details", text: $event.details, axis: .vertical)
                 .textFieldStyle(.roundedBorder)
-                .padding()
             
             // 1. Display Selected Characters Above Input
             if !selectedChars.isEmpty {
@@ -262,24 +261,84 @@ struct NewEventSheet: View {
 
     // Private functions are now in non-local struct scope
     private func selectCharacter(_ character: StoryChar) {
-        selectedChars.append(character)
-        charInputText = "" // Clear textfield for next entry
-        character.events.append(event)
+        if !selectedChars.contains(where: { $0.id == character.id }) {
+            selectedChars.append(character)
+        }
+        
+        // 1. Link Character <-> Event
+        if !character.events.contains(where: { $0.id == event.id }) {
+            character.events.append(event)
+        }
+        
+        // 2. Link Character <-> Arcs tied to this Event
+        for arc in selectedArcs {
+            if !character.arcs.contains(where: { $0.id == arc.id }) {
+                character.arcs.append(arc)
+            }
+        }
     }
 
     private func removeCharacter(_ character: StoryChar) {
-        selectedChars.removeAll { $0 == character }
-        character.events.removeAll { $0 == event}
+        // 1. Remove character from this sheet's local selection
+        selectedChars.removeAll { $0.id == character.id }
+        
+        // 2. Unlink character from this event
+        character.events.removeAll { $0.id == event.id }
+        
+        // 3. Clean up Arcs (Scenario 2 Fix)
+        // Check every arc currently selected in this view
+        for arc in selectedArcs {
+            // Does this character belong to ANY OTHER events in this arc?
+            let hasOtherSharedEvents = arc.events.contains { arcEvent in
+                arcEvent.id != event.id && character.events.contains { $0.id == arcEvent.id }
+            }
+            
+            // If they share no other events in this arc, remove character from arc
+            if !hasOtherSharedEvents {
+                arc.characters.removeAll { $0.id == character.id }
+                character.arcs.removeAll { $0.id == arc.id }
+            }
+        }
+    }
+
+    private func removeArc(_ arc: Arc) {
+        // 1. Remove arc from this sheet's local selection
+        selectedArcs.removeAll { $0.id == arc.id }
+        
+        // 2. Unlink arc from this event
+        arc.events.removeAll { $0.id == event.id }
+        
+        // 3. Clean up Characters (Scenario 4 Fix)
+        // Check every character currently selected in this view
+        for character in selectedChars {
+            // Does this character share ANY OTHER events in this arc?
+            let hasOtherSharedEvents = arc.events.contains { arcEvent in
+                arcEvent.id != event.id && character.events.contains { $0.id == arcEvent.id }
+            }
+            
+            // If they share no other events in this arc, remove relationship
+            if !hasOtherSharedEvents {
+                arc.characters.removeAll { $0.id == character.id }
+                character.arcs.removeAll { $0.id == arc.id }
+            }
+        }
     }
     
     private func selectArc(_ arc: Arc) {
-        selectedArcs.append(arc)
-        arcInputText = "" // Clear textfield for next entry
-        arc.events.append(event)
-    }
-    
-    private func removeArc(_ arc: Arc) {
-        selectedArcs.removeAll { $0 == arc }
-        arc.events.removeAll { $0 == event}
+        if !selectedArcs.contains(where: { $0.id == arc.id }) {
+            selectedArcs.append(arc)
+        }
+        
+        // 1. Link Arc <-> Event
+        if !arc.events.contains(where: { $0.id == event.id }) {
+            arc.events.append(event)
+        }
+        
+        // 2. Link Arc <-> Characters tied to this Event
+        for character in selectedChars {
+            if !arc.characters.contains(where: { $0.id == character.id }) {
+                arc.characters.append(character)
+            }
+        }
     }
 }

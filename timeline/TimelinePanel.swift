@@ -150,6 +150,12 @@ struct TimelinePanel: View {
     private func deleteEvent(_ event: Event) {
         withAnimation {
             document.events.removeAll { $0.id == event.id }
+            for arc in event.arcs {
+                arc.events.removeAll { $0.id == event.id}
+            }
+            for storyc in event.characters {
+                storyc.events.removeAll {$0.id == event.id}
+            }
             
             let yearIndex = event.year - document.config.startYear
             if document.years.indices.contains(yearIndex) {
