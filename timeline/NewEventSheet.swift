@@ -17,15 +17,27 @@ struct NewEventSheet: View {
         eventToEdit != nil
     }
     
-    @State private var inputText: String = ""
+    @State private var charInputText: String = ""
     @State private var selectedChars: [StoryChar] = []
-    @FocusState private var isTextFieldFocused: Bool
+    @FocusState private var isCharTextFieldFocused: Bool
     
     var filteredCharacters: [StoryChar] {
-        guard !inputText.trimmingCharacters(in: .whitespaces).isEmpty else { return [] }
+        guard !charInputText.trimmingCharacters(in: .whitespaces).isEmpty else { return [] }
         return document.characters.filter { character in
-            character.name.localizedCaseInsensitiveContains(inputText) &&
+            character.name.localizedCaseInsensitiveContains(charInputText) &&
             !selectedChars.contains(character)
+        }
+    }
+    
+    @State private var arcInputText: String = ""
+    @State private var selectedArcs: [Arc] = []
+    @FocusState private var isArcTextFieldFocused: Bool
+    
+    var filteredArcs: [Arc] {
+        guard !arcInputText.trimmingCharacters(in: .whitespaces).isEmpty else {return []}
+        return document.arcs.filter { arc in
+            arc.title.localizedCaseInsensitiveContains(arcInputText) &&
+            !selectedArcs.contains(arc)
         }
     }
     
@@ -110,13 +122,13 @@ struct NewEventSheet: View {
             }
             
             // 2. Input TextField
-            TextField("Search character name...", text: $inputText)
+            TextField("Search character name...", text: $charInputText)
                 .textFieldStyle(.roundedBorder)
-                .focused($isTextFieldFocused)
+                .focused($isCharTextFieldFocused)
                 .disableAutocorrection(true)
             
             // 3. Dropdown Menu for Matching StoryChars
-            if isTextFieldFocused && !filteredCharacters.isEmpty {
+            if isCharTextFieldFocused && !filteredCharacters.isEmpty {
                 VStack(alignment: .leading, spacing: 0) {
                     ScrollView {
                         LazyVStack(alignment: .leading, spacing: 0) {
@@ -127,6 +139,73 @@ struct NewEventSheet: View {
                                     HStack {
                                         VStack(alignment: .leading, spacing: 2) {
                                             Text(storyc.name)
+                                                .font(.body)
+                                                .foregroundColor(.primary)
+                                        }
+                                        Spacer()
+                                    }
+                                    .padding(.vertical, 8)
+                                    .padding(.horizontal, 12)
+                                    .background(.ultraThinMaterial)
+                                }
+                                .buttonStyle(.plain)
+                                Divider()
+                            }
+                        }
+                    }
+                    .frame(maxHeight: 200) // Limits dropdown height
+                }
+                .background(.secondary)
+                .cornerRadius(8)
+                .shadow(color: Color.black.opacity(0.15), radius: 5, x: 0, y: 3)
+            }
+            
+            if !selectedArcs.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(selectedArcs) { arc in
+                            HStack(spacing: 6) {
+                                VStack(alignment: .leading, spacing: 1) {
+                                    Text(arc.title)
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+                                }
+                                
+                                Button(action: {
+                                    removeArc(arc)
+                                }) {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .font(.caption)
+                                }
+                            }
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                            .background(Color.indigo.opacity(0.15))
+                            .foregroundColor(.indigo)
+                            .clipShape(Capsule())
+                        }
+                    }
+                }
+            }
+            
+            // 2. Input TextField
+            TextField("Search arc title...", text: $arcInputText)
+                .textFieldStyle(.roundedBorder)
+                .focused($isArcTextFieldFocused)
+                .disableAutocorrection(true)
+            
+            // 3. Dropdown Menu for Matching StoryChars
+            if isArcTextFieldFocused && !filteredArcs.isEmpty {
+                VStack(alignment: .leading, spacing: 0) {
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: 0) {
+                            ForEach(filteredArcs) { arc in
+                                Button(action: {
+                                    selectArc(arc)
+                                }) {
+                                    HStack {
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text(arc.title)
                                                 .font(.body)
                                                 .foregroundColor(.primary)
                                         }
@@ -176,6 +255,7 @@ struct NewEventSheet: View {
             if let eventToEdit {
                 event = eventToEdit
                 selectedChars = eventToEdit.characters
+                selectedArcs = eventToEdit.arcs
             }
         }
     } // <-- Closing brace for `var body: some View` added here
@@ -183,12 +263,23 @@ struct NewEventSheet: View {
     // Private functions are now in non-local struct scope
     private func selectCharacter(_ character: StoryChar) {
         selectedChars.append(character)
-        inputText = "" // Clear textfield for next entry
+        charInputText = "" // Clear textfield for next entry
         character.events.append(event)
     }
 
     private func removeCharacter(_ character: StoryChar) {
         selectedChars.removeAll { $0 == character }
         character.events.removeAll { $0 == event}
+    }
+    
+    private func selectArc(_ arc: Arc) {
+        selectedArcs.append(arc)
+        arcInputText = "" // Clear textfield for next entry
+        arc.events.append(event)
+    }
+    
+    private func removeArc(_ arc: Arc) {
+        selectedArcs.removeAll { $0 == arc }
+        arc.events.removeAll { $0 == event}
     }
 }

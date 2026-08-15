@@ -99,7 +99,7 @@ struct ArcCardView: View {
             }
             
             Text(node.title)
-                .font(.title2)
+                .font(.largeTitle)
                 .bold()
             
             Text(node.summary)
@@ -107,26 +107,30 @@ struct ArcCardView: View {
                 .multilineTextAlignment(.leading)
             
             Text("Characters")
-                .font(.headline)
+                .font(.title)
             ForEach(node.characters) { storyc in
                 Text(storyc.name)
                     .font(.body)
             }
             
             Text("Events")
-                .font(.headline)
+                .font(.title)
             ForEach(node.events) { event in
-                Text(event.title)
-                    .font(.body)
-                    .bold()
-                
-                Text("\(event.year) / \(event.month.map(String.init) ?? "MM") / \(event.day.map(String.init) ?? "DD")")
-                    .font(.body)
-                
-                Text(event.details)
-                    .font(.body)
-                    .multilineTextAlignment(.leading)
-                    .lineLimit(1)
+                HStack(spacing: 10) {
+                    Text(event.title)
+                        .font(.body)
+                        .bold()
+                    
+                    Text("\(event.year) / \(event.month.map(String.init) ?? "MM") / \(event.day.map(String.init) ?? "DD")")
+                        .font(.body)
+                    
+                    Text(event.details)
+                        .font(.body)
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(1)
+                    
+                    Spacer()
+                }
             }
         }
         .padding(16)
