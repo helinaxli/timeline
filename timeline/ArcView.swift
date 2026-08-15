@@ -141,11 +141,13 @@ struct ArcCardView: View {
         }
         .padding(16)
         .frame(width: 1000, alignment: .leading) // Forces content to left edge & expands width dynamically
-        .background(.secondary.opacity(0.2))
+        // .background(.secondary.opacity(0.2))
+        .background(Color(.windowBackgroundColor))
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(Color.accentColor, lineWidth: 2)
+                // .strokeBorder(Color.accentColor, lineWidth: 2)
+                .strokeBorder(Color.black, lineWidth: 2)
         )
     }
 }

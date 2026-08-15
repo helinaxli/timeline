@@ -143,11 +143,13 @@ struct CharCardView: View {
         .padding(16)
         .frame(width: 1000) // Fixed width, flexible height
         .frame(minHeight: 100) // Ensures consistent minimum height
-        .background(.secondary.opacity(0.2))
+        // .background(.secondary.opacity(0.2))
+        .background(Color(.windowBackgroundColor))
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(Color.accentColor, lineWidth: 2)
+                // .strokeBorder(Color.accentColor, lineWidth: 2)
+                .strokeBorder(Color.black, lineWidth: 2)
         )
     }
     

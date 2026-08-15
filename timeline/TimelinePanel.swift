@@ -247,7 +247,8 @@ struct NodeCardView: View {
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(Color.accentColor, lineWidth: 2)
+                // .strokeBorder(Color.accentColor, lineWidth: 2)
+                .strokeBorder(Color.black, lineWidth: 2)
         )
         .gesture(
             DragGesture(minimumDistance: 2)

@@ -112,8 +112,8 @@ struct NewEventSheet: View {
                             }
                             .padding(.horizontal, 10)
                             .padding(.vertical, 6)
-                            .background(Color.indigo.opacity(0.15))
-                            .foregroundColor(.indigo)
+                            .background(Color.blue.opacity(0.15))
+                            .foregroundColor(.blue)
                             .clipShape(Capsule())
                         }
                     }
@@ -139,22 +139,22 @@ struct NewEventSheet: View {
                                         VStack(alignment: .leading, spacing: 2) {
                                             Text(storyc.name)
                                                 .font(.body)
-                                                .foregroundColor(.primary)
+                                                .foregroundColor(.blue)
                                         }
                                         Spacer()
                                     }
                                     .padding(.vertical, 8)
                                     .padding(.horizontal, 12)
-                                    .background(.ultraThinMaterial)
+                                    // .background(Color.blue.opacity(0.15))
                                 }
                                 .buttonStyle(.plain)
-                                Divider()
                             }
                         }
                     }
                     .frame(maxHeight: 200) // Limits dropdown height
                 }
-                .background(.secondary)
+                // .background(.secondary)
+                .background(Color.blue.opacity(0.15))
                 .cornerRadius(8)
                 .shadow(color: Color.black.opacity(0.15), radius: 5, x: 0, y: 3)
             }
@@ -179,8 +179,8 @@ struct NewEventSheet: View {
                             }
                             .padding(.horizontal, 10)
                             .padding(.vertical, 6)
-                            .background(Color.indigo.opacity(0.15))
-                            .foregroundColor(.indigo)
+                            .background(Color.blue.opacity(0.15))
+                            .foregroundColor(.blue)
                             .clipShape(Capsule())
                         }
                     }
@@ -206,22 +206,22 @@ struct NewEventSheet: View {
                                         VStack(alignment: .leading, spacing: 2) {
                                             Text(arc.title)
                                                 .font(.body)
-                                                .foregroundColor(.primary)
+                                                .foregroundColor(.blue)
                                         }
                                         Spacer()
                                     }
                                     .padding(.vertical, 8)
                                     .padding(.horizontal, 12)
-                                    .background(.ultraThinMaterial)
+                                    // .background(.ultraThinMaterial)
                                 }
                                 .buttonStyle(.plain)
-                                Divider()
                             }
                         }
                     }
                     .frame(maxHeight: 200) // Limits dropdown height
                 }
-                .background(.secondary)
+                // .background(.secondary)
+                .background(Color.blue.opacity(0.15))
                 .cornerRadius(8)
                 .shadow(color: Color.black.opacity(0.15), radius: 5, x: 0, y: 3)
             }
