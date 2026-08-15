@@ -212,6 +212,7 @@ struct NewEventSheet: View {
                                     }
                                     .padding(.vertical, 8)
                                     .padding(.horizontal, 12)
+                                    .contentShape(Rectangle())
                                     // .background(.ultraThinMaterial)
                                 }
                                 .buttonStyle(.plain)

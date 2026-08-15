@@ -36,23 +36,22 @@ struct NewArcSheet: View {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 0) {
                         // Fix 1 & 2: Use id: \.self to iterate over [Color] directly
-                        ForEach(document.colorPalette, id: \.self) { color in
-                            Button(action: {
-                                // Action when color is selected
-                            }) {
-                                HStack {
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        // Fix 3: Display a label and apply the Color object directly
-                                        Text(color.description.capitalized)
-                                            .font(.body)
-                                            .foregroundColor(color)
+                        ForEach(document.colorPalette, id: \.self) { col in
+                            Button(
+                                action: {
+                                    arc.myColor = col
+                                },
+                                label: {
+                                    HStack {
+                                        Text(col.name)
+                                            .foregroundColor(col.fgColor)
+                                        Spacer()
                                     }
-                                    Spacer()
+                                    .padding(.vertical, 8)
+                                    .padding(.horizontal, 12)
+                                    .background(col.bgColor)
                                 }
-                                .padding(.vertical, 8)
-                                .padding(.horizontal, 12)
-                                .contentShape(Rectangle()) // Makes the whole row area tappable
-                            }
+                            )
                             .buttonStyle(.plain)
                         }
                     }
