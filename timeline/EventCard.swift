@@ -20,11 +20,25 @@ struct EventCard: View {
                 .bold()
             Text(formattedDate)
                 .font(.body)
+            
+            Text("Characters")
+                .font(.headline)
+            ForEach(node.characters) { storyc in
+                Text(storyc.name)
+                    .font(.body)
+            }
+            
+            Text("Arcs")
+                .font(.headline)
+            ForEach(node.arcs) { arc in
+                Text(arc.title)
+                    .font(.body)
+            }
+            
+            Text("Details")
+                .font(.headline)
             Text(node.details)
                 .font(.body)
-            
-            // Characters
-            // Arcs
             
             Spacer()
             
