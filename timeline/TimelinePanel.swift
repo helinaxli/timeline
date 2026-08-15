@@ -71,52 +71,49 @@ struct TimelinePanel: View {
     
     // Add `@GestureState` inside TimelinePanel to smoothly track active drags without accumulation bugs
     @GestureState private var dragTranslations: [UUID: CGFloat] = [:]
+    // Add `@State` to track the initial offset before drag begins
+    @State private var dragStartOffsets: [UUID: CGFloat] = [:]
 
     private func nodeOverlay() -> some View {
         ForEach($document.events) { $node in
             let yPos = yPosition(event: node)
             let isLeft = node.side == "left"
             
-            // Active translation during continuous dragging
+            // Active translation during gesture
             let activeTranslation = dragTranslations[node.id] ?? 0
             
-            // Calculate raw offset including drag
+            // 1. Calculate live position (base stored offset + active drag)
             let rawOffset = node.xOffset + activeTranslation
             
-            // Clamp offsets so left cards stay <= 0 and right cards stay >= 0, plus screen bounds padding
+            // Clamped offset for active UI rendering
             let clampedOffset: CGFloat = {
                 if isLeft {
-                    return min(0, max(-axisX + 50, rawOffset))
+                    return min(0, max(-axisX + 20, rawOffset))
                 } else {
-                    return max(0, min(800 - axisX - 50, rawOffset))
+                    return max(0, min(500 - axisX - 20, rawOffset))
                 }
             }()
             
-            // Base line length + extension as card moves outward
             let baseLineWidth: CGFloat = 40
             let extraDistance = isLeft ? -clampedOffset : clampedOffset
             let connectorWidth = baseLineWidth + extraDistance
             
             ZStack {
                 if isLeft {
-                    // 1. Connector line anchored directly onto axisX
                     Rectangle()
                         .fill(Color.secondary)
                         .frame(width: connectorWidth, height: 2)
                         .position(x: axisX - (connectorWidth / 2), y: yPos)
                     
-                    // 2. Card positioned at the outer end of the connector line
-                    NodeCardView(node: $node)
+                    NodeCardView(node: $node, document: document)
                         .position(x: axisX - connectorWidth - (node.size.width / 2), y: yPos)
                 } else {
-                    // 1. Connector line anchored directly onto axisX
                     Rectangle()
                         .fill(Color.secondary)
                         .frame(width: connectorWidth, height: 2)
                         .position(x: axisX + (connectorWidth / 2), y: yPos)
                     
-                    // 2. Card positioned at the outer end of the connector line
-                    NodeCardView(node: $node)
+                    NodeCardView(node: $node, document: document)
                         .position(x: axisX + connectorWidth + (node.size.width / 2), y: yPos)
                 }
             }
@@ -125,22 +122,34 @@ struct TimelinePanel: View {
                     .updating($dragTranslations) { value, state, _ in
                         state[node.id] = value.translation.width
                     }
-                    .onEnded { value in
-                        let finalTranslation = value.translation.width
-                        let proposedOffset = node.xOffset + finalTranslation
-                        
-                        let oldOffset = node.xOffset
-                        let newOffset: CGFloat = isLeft
-                            ? min(0, max(-axisX + 50, proposedOffset))
-                            : max(0, min(800 - axisX - 50, proposedOffset))
-                        
-                        // Apply clean persistent update
-                        node.xOffset = newOffset
-                        
-                        // Register Command + Z undo state
-                        undoManager?.registerUndo(withTarget: document) { _ in
-                            node.xOffset = oldOffset
+                    .onChanged { _ in
+                        // Capture original offset once when gesture begins
+                        if dragStartOffsets[node.id] == nil {
+                            dragStartOffsets[node.id] = node.xOffset
                         }
+                    }
+                    .onEnded { value in
+                        guard let initialOffset = dragStartOffsets[node.id] else { return }
+                        
+                        let finalTranslation = value.translation.width
+                        let proposedOffset = initialOffset + finalTranslation
+                        
+                        let newOffset: CGFloat = isLeft
+                            ? min(0, max(-axisX + 20, proposedOffset))
+                            : max(0, min(500 - axisX - 20, proposedOffset))
+                        
+                        // Only register undo if the node actually moved
+                        if initialOffset != newOffset {
+                            node.xOffset = newOffset
+                            
+                            undoManager?.registerUndo(withTarget: document) { _ in
+                                node.xOffset = initialOffset
+                            }
+                            undoManager?.setActionName("Move Node")
+                        }
+                        
+                        // Clear initial tracking state
+                        dragStartOffsets[node.id] = nil
                     }
             )
         }
@@ -191,12 +200,16 @@ struct TimelinePanel: View {
 }
 
 struct NodeCardView: View {
-    // 1. Change from 'let node: Event' to '@Binding var node: Event'
     @Binding var node: Event
+    // Pass the document down or use it as target
+    var document: TimelineDocument
     @Environment(\.undoManager) private var undoManager
 
     private let minWidth: CGFloat = 180
     private let minHeight: CGFloat = 90
+    
+    // Store the size prior to the gesture starting
+    @State private var dragStartSize: CGSize?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -209,15 +222,14 @@ struct NodeCardView: View {
                 .font(.body)
         }
         .padding(16)
-        // Access size directly from the node binding
         .frame(width: node.size.width, height: node.size.height, alignment: .topLeading)
         .background(Color(.windowBackgroundColor))
+        .contentShape(Rectangle())
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
                 .strokeBorder(Color.accentColor, lineWidth: 2)
         )
-        // Corner resize handles
         .overlay(alignment: .topLeading) { cornerHandle(xMultiplier: -1, yMultiplier: -1) }
         .overlay(alignment: .topTrailing) { cornerHandle(xMultiplier: 1, yMultiplier: -1) }
         .overlay(alignment: .bottomLeading) { cornerHandle(xMultiplier: -1, yMultiplier: 1) }
@@ -231,22 +243,35 @@ struct NodeCardView: View {
             .gesture(
                 DragGesture()
                     .onChanged { value in
+                        // 1. Capture initial size once at start of drag
+                        if dragStartSize == nil {
+                            dragStartSize = node.size
+                        }
+                        
+                        guard let startSize = dragStartSize else { return }
+
                         let deltaW = value.translation.width * xMultiplier
                         let deltaH = value.translation.height * yMultiplier
                         
-                        // Mutate node size directly
                         node.size = CGSize(
-                            width: max(minWidth, node.size.width + deltaW),
-                            height: max(minHeight, node.size.height + deltaH)
+                            width: max(minWidth, startSize.width + deltaW),
+                            height: max(minHeight, startSize.height + deltaH)
                         )
                     }
-                    .onEnded { value in
-                        let oldSize = node.size
+                    .onEnded { _ in
+                        guard let originalSize = dragStartSize else { return }
+                        let finalSize = node.size
                         
-                        // Register Undo for resizing (⌘Z)
-                        undoManager?.registerUndo(withTarget: undoManager!) { _ in
-                            node.size = oldSize
+                        // Register undo ONLY if the size actually changed
+                        if originalSize != finalSize {
+                            undoManager?.registerUndo(withTarget: document) { targetDoc in
+                                node.size = originalSize
+                            }
+                            undoManager?.setActionName("Resize Node")
                         }
+                        
+                        // Reset tracking state
+                        dragStartSize = nil
                     }
             )
     }
