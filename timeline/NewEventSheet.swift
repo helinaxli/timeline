@@ -17,6 +17,18 @@ struct NewEventSheet: View {
         eventToEdit != nil
     }
     
+    @State private var inputText: String = ""
+    @State private var selectedChars: [StoryChar] = []
+    @FocusState private var isTextFieldFocused: Bool
+    
+    var filteredCharacters: [StoryChar] {
+        guard !inputText.trimmingCharacters(in: .whitespaces).isEmpty else { return [] }
+        return document.characters.filter { character in
+            character.name.localizedCaseInsensitiveContains(inputText) &&
+            !selectedChars.contains(character)
+        }
+    }
+    
     @Environment(\.dismiss) private var dismiss
     
     private var isYearInvalid: Bool {
@@ -68,6 +80,74 @@ struct NewEventSheet: View {
                 .textFieldStyle(.roundedBorder)
                 .padding()
             
+            // 1. Display Selected Characters Above Input
+            if !selectedChars.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(selectedChars) { storyc in
+                            HStack(spacing: 6) {
+                                VStack(alignment: .leading, spacing: 1) {
+                                    Text(storyc.name)
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+                                }
+                                
+                                Button(action: {
+                                    removeCharacter(storyc)
+                                }) {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .font(.caption)
+                                }
+                            }
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                            .background(Color.indigo.opacity(0.15))
+                            .foregroundColor(.indigo)
+                            .clipShape(Capsule())
+                        }
+                    }
+                }
+            }
+            
+            // 2. Input TextField
+            TextField("Search character name...", text: $inputText)
+                .textFieldStyle(.roundedBorder)
+                .focused($isTextFieldFocused)
+                .disableAutocorrection(true)
+            
+            // 3. Dropdown Menu for Matching StoryChars
+            if isTextFieldFocused && !filteredCharacters.isEmpty {
+                VStack(alignment: .leading, spacing: 0) {
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: 0) {
+                            ForEach(filteredCharacters) { storyc in
+                                Button(action: {
+                                    selectCharacter(storyc)
+                                }) {
+                                    HStack {
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text(storyc.name)
+                                                .font(.body)
+                                                .foregroundColor(.primary)
+                                        }
+                                        Spacer()
+                                    }
+                                    .padding(.vertical, 8)
+                                    .padding(.horizontal, 12)
+                                    .background(.ultraThinMaterial)
+                                }
+                                .buttonStyle(.plain)
+                                Divider()
+                            }
+                        }
+                    }
+                    .frame(maxHeight: 200) // Limits dropdown height
+                }
+                .background(.secondary)
+                .cornerRadius(8)
+                .shadow(color: Color.black.opacity(0.15), radius: 5, x: 0, y: 3)
+            }
+            
             HStack {
                 Button("Cancel", role: .cancel) {
                     dismiss()
@@ -77,8 +157,10 @@ struct NewEventSheet: View {
                 
                 Button(isEditing ? "Save" : "Create") {
                     if let masterIndex = document.events.firstIndex(where: { $0.id == event.id }) {
+                        event.characters = selectedChars
                         document.updateEvent(masterIndex: masterIndex, updatedEvent: event)
                     } else {
+                        event.characters = selectedChars
                         document.addEvent(event: event)
                     }
                     dismiss()
@@ -93,7 +175,20 @@ struct NewEventSheet: View {
             // Populate form fields if editing an existing character
             if let eventToEdit {
                 event = eventToEdit
+                selectedChars = eventToEdit.characters
             }
         }
+    } // <-- Closing brace for `var body: some View` added here
+
+    // Private functions are now in non-local struct scope
+    private func selectCharacter(_ character: StoryChar) {
+        selectedChars.append(character)
+        inputText = "" // Clear textfield for next entry
+        character.events.append(event)
+    }
+
+    private func removeCharacter(_ character: StoryChar) {
+        selectedChars.removeAll { $0 == character }
+        character.events.removeAll { $0 == event}
     }
 }

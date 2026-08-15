@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-class StoryChar: Identifiable {
+class StoryChar: Identifiable, Equatable {
     var id: UUID
     var name: String = ""
     var bday_y: Int?
@@ -23,5 +23,9 @@ class StoryChar: Identifiable {
     init(id: UUID = UUID()) {
         self.id = id
 
+    }
+    
+    static func == (lhs: StoryChar, rhs: StoryChar) -> Bool {
+        lhs.id == rhs.id
     }
 }
