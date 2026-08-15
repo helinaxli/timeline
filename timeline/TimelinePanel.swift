@@ -22,6 +22,9 @@ struct TimelinePanel: View {
     var totalYears: Int { endYear - startYear + 1 }
     private var totalHeight: CGFloat { CGFloat(totalYears) * pointsPerYear }
     
+    @State private var isShowingEventEditSheet = false
+    @State private var editingEvent: Event? = nil
+    
     var body: some View {
         VStack {
             Text(document.title)
@@ -36,6 +39,9 @@ struct TimelinePanel: View {
                 .frame(width: 1000, height: totalHeight + 100)
                 .contentShape(Rectangle())
                 .padding(.top, 40)
+            }
+            .sheet(item: $editingEvent) { curr_event in
+                NewEventSheet(document: document, isPresented: $isShowingEventEditSheet, eventToEdit: curr_event)
             }
         }
     }
@@ -93,7 +99,12 @@ struct TimelinePanel: View {
                         .frame(width: connectorWidth, height: 2)
                         .position(x: axisX - (connectorWidth / 2), y: yPos)
                      
-                    NodeCardView(node: $node, document: document, isLeft: isLeft, axisX: axisX)
+                    NodeCardView(node: $node, document: document, isLeft: isLeft, axisX: axisX, onEdit: {
+                        editingEvent = node
+                    },
+                    onDelete: {
+                        deleteEvent(node)
+                    })
                         .position(x: axisX - connectorWidth - (node.size.width / 2), y: yPos)
                 } else {
                     Rectangle()
@@ -101,10 +112,35 @@ struct TimelinePanel: View {
                         .frame(width: connectorWidth, height: 2)
                         .position(x: axisX + (connectorWidth / 2), y: yPos)
                      
-                    NodeCardView(node: $node, document: document, isLeft: isLeft, axisX: axisX)
+                    NodeCardView(node: $node, document: document, isLeft: isLeft, axisX: axisX, onEdit: {
+                        editingEvent = node
+                    },
+                    onDelete: {
+                        deleteEvent(node)
+                    })
                         .position(x: axisX + connectorWidth + (node.size.width / 2), y: yPos)
                 }
             }
+        }
+    }
+    
+    private func deleteEvent(_ event: Event) {
+        withAnimation {
+            document.events.removeAll { $0.id == event.id }
+            
+            let yearIndex = event.year - document.config.startYear
+                if document.years.indices.contains(yearIndex) {
+                    let matchingYear = document.years[yearIndex]
+                    matchingYear.events.removeAll { $0.id == event.id }
+                    
+                    // 3. Locate matching FantasyMonth inside that year
+                    if let month = event.month {
+                        if matchingYear.months.indices.contains(month - 1) {
+                            let matchingMonth = matchingYear.months[month - 1]
+                            matchingMonth.events.removeAll { $0.id == event.id }
+                        }
+                    }
+                }
         }
     }
     
@@ -154,6 +190,9 @@ struct NodeCardView: View {
     var isLeft: Bool
     var axisX: CGFloat
     
+    var onEdit: (() -> Void)? = nil
+    var onDelete: (() -> Void)? = nil
+    
     @Environment(\.undoManager) private var undoManager
 
     private let minWidth: CGFloat = 180
@@ -171,6 +210,27 @@ struct NodeCardView: View {
                 .font(.body)
             Text(node.details)
                 .font(.body)
+            
+            Spacer()
+            
+            HStack {
+                Spacer()
+                
+                HStack(spacing: 12) {
+                    Button(action: { onEdit?() }) {
+                        Image(systemName: "pencil")
+                            .font(.caption)
+                    }
+                    .accessibilityLabel("Edit")
+                    
+                    Button(role: .destructive, action: { onDelete?() }) {
+                        Image(systemName: "trash")
+                            .font(.caption)
+                    }
+                    .accessibilityLabel("Delete")
+                }
+                .buttonStyle(.borderless)
+            }
         }
         .padding(16)
         .frame(width: node.size.width, height: node.size.height, alignment: .topLeading)
@@ -215,6 +275,13 @@ struct NodeCardView: View {
         .overlay(alignment: .topTrailing) { cornerHandle(xMultiplier: 1, yMultiplier: -1) }
         .overlay(alignment: .bottomLeading) { cornerHandle(xMultiplier: -1, yMultiplier: 1) }
         .overlay(alignment: .bottomTrailing) { cornerHandle(xMultiplier: 1, yMultiplier: 1) }
+        .onTapGesture(count:2) {
+            if node.side == "left" {
+                node.side = "right"
+            } else {
+                node.side = "left"
+            }
+        }
     }
 
     private func cornerHandle(xMultiplier: CGFloat, yMultiplier: CGFloat) -> some View {

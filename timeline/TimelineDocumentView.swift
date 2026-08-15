@@ -49,6 +49,12 @@ struct TimelineDocumentView: View {
                             Label("Character View", systemImage: "person.fill")
                         }
                         
+//                        NavigationLink {
+//                            ArcView(document: document)
+//                        } label: {
+//                            Label("Arc View", systemImage: "folder.fill")
+//                        }
+                        
                         Menu("Add New", systemImage: "plus") {
                             Button("New Character", systemImage: "person.badge.plus.fill") {
                                 isShowingNewStoryCharSheet = true

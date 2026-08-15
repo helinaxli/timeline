@@ -62,4 +62,27 @@ class TimelineDocument {
             }
         }
     }
+    
+    func updateEvent(masterIndex: Int, updatedEvent: Event) {
+        // 1. Replace in document master list
+        self.events[masterIndex] = updatedEvent
+        
+        // 2. Replace in matching FantasyYear
+        let yearIndex = updatedEvent.year - self.config.startYear
+        if self.years.indices.contains(yearIndex) {
+            if let yearEventIndex = self.years[yearIndex].events.firstIndex(where: { $0.id == updatedEvent.id }) {
+                self.years[yearIndex].events[yearEventIndex] = updatedEvent
+            }
+            
+            // 3. Replace in matching FantasyMonth inside that year
+            if let month = updatedEvent.month {
+                let monthIndex = month - 1
+                if self.years[yearIndex].months.indices.contains(monthIndex) {
+                    if let monthEventIndex = self.years[yearIndex].months[monthIndex].events.firstIndex(where: { $0.id == updatedEvent.id }) {
+                        self.years[yearIndex].months[monthIndex].events[monthEventIndex] = updatedEvent
+                    }
+                }
+            }
+        }
+    }
 }

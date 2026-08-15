@@ -10,8 +10,15 @@ import SwiftData
 
 struct NewEventSheet: View {
     @Bindable var document: TimelineDocument
-    @Bindable var event = Event(id: UUID())
+    @State private var event = Event(id: UUID())
     @Binding var isPresented: Bool
+    var eventToEdit: Event? = nil
+    private var isEditing: Bool {
+        eventToEdit != nil
+    }
+    
+    @Environment(\.dismiss) private var dismiss
+    
     private var isYearInvalid: Bool {
         event.year < document.config.startYear || event.year > document.config.endYear
     }
@@ -20,7 +27,7 @@ struct NewEventSheet: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("New Event")
+            Text(isEditing ? "Edit Event" : "New Event")
                 .font(.title2)
                 .bold()
             
@@ -62,10 +69,19 @@ struct NewEventSheet: View {
                 .padding()
             
             HStack {
+                Button("Cancel", role: .cancel) {
+                    dismiss()
+                }
+                
                 Spacer()
-                Button("Create") {
-                    document.addEvent(event: event)
-                    isPresented = false
+                
+                Button(isEditing ? "Save" : "Create") {
+                    if let masterIndex = document.events.firstIndex(where: { $0.id == event.id }) {
+                        document.updateEvent(masterIndex: masterIndex, updatedEvent: event)
+                    } else {
+                        document.addEvent(event: event)
+                    }
+                    dismiss()
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(isYearInvalid)
@@ -73,5 +89,11 @@ struct NewEventSheet: View {
         }
         .padding(20)
         .frame(minWidth: 350, minHeight: 250)
+        .onAppear {
+            // Populate form fields if editing an existing character
+            if let eventToEdit {
+                event = eventToEdit
+            }
+        }
     }
 }
