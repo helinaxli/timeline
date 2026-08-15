@@ -12,6 +12,7 @@ struct CharacterView: View {
     
     @State private var isShowingNewEventSheet = false
     @State private var isShowingNewStoryCharSheet = false
+    @State private var isShowingNewArcSheet = false
     
     // Track the specific character being edited
     @State private var editingCharacter: StoryChar? = nil
@@ -48,7 +49,7 @@ struct CharacterView: View {
                             isShowingNewEventSheet = true
                         }
                         Button("New Arc", systemImage: "folder.fill.badge.plus") {
-                            // stuff
+                            isShowingNewArcSheet = true
                         }
                     }
                 }
@@ -64,6 +65,9 @@ struct CharacterView: View {
             }
             .sheet(isPresented: $isShowingNewEventSheet) {
                 NewEventSheet(document: document, isPresented: $isShowingNewEventSheet)
+            }
+            .sheet(isPresented: $isShowingNewArcSheet) {
+                NewArcSheet(document: document, isPresented: $isShowingNewArcSheet)
             }
         }
     }

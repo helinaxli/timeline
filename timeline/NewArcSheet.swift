@@ -45,6 +45,14 @@ struct NewArcSheet: View {
                 .buttonStyle(.borderedProminent)
             }
         }
+        .padding(20)
+        .frame(minWidth: 350, minHeight: 250)
+        .onAppear {
+            // Populate form fields if editing an existing character
+            if let arcToEdit {
+                arc = arcToEdit
+            }
+        }
     }
     
     private func saveArc() {

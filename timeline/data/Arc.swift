@@ -6,14 +6,16 @@
 //
 
 import Foundation
+import SwiftUI
 import SwiftData
 
 @Model
 class Arc: Identifiable {
     var id: UUID
-    var title: String = "nil"
+    var title: String = ""
     var side: String
     var summary: String = ""
+    // var color: Color?
     
     @Relationship(inverse: \Event.arcs)
     var events: [Event] = []

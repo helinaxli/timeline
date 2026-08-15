@@ -28,6 +28,7 @@ struct TimelineDocumentView: View {
     
     @State private var isShowingNewEventSheet = false
     @State private var isShowingNewStoryCharSheet = false
+    @State private var isShowingNewArcSheet = false
 
     var body: some View {
         NavigationStack {
@@ -49,11 +50,11 @@ struct TimelineDocumentView: View {
                             Label("Character View", systemImage: "person.fill")
                         }
                         
-//                        NavigationLink {
-//                            ArcView(document: document)
-//                        } label: {
-//                            Label("Arc View", systemImage: "folder.fill")
-//                        }
+                        NavigationLink {
+                            ArcView(document: document)
+                        } label: {
+                            Label("Arc View", systemImage: "folder.fill")
+                        }
                         
                         Menu("Add New", systemImage: "plus") {
                             Button("New Character", systemImage: "person.badge.plus.fill") {
@@ -63,7 +64,7 @@ struct TimelineDocumentView: View {
                                 isShowingNewEventSheet = true
                             }
                             Button("New Arc", systemImage: "folder.fill.badge.plus") {
-                                // stuff
+                                isShowingNewArcSheet = true
                             }
                         }
                     }
@@ -82,6 +83,9 @@ struct TimelineDocumentView: View {
             }
             .sheet(isPresented: $isShowingNewStoryCharSheet) {
                 NewStoryCharSheet(document: document, isPresented: $isShowingNewStoryCharSheet)
+            }
+            .sheet(isPresented: $isShowingNewArcSheet) {
+                NewArcSheet(document: document, isPresented: $isShowingNewArcSheet)
             }
         }
     }
