@@ -15,7 +15,7 @@ class Arc: Identifiable {
     var title: String = ""
     var side: String
     var summary: String = ""
-    // var color: Color?
+    var colorHex: String = ""
     
     @Relationship(inverse: \Event.arcs)
     var events: [Event] = []

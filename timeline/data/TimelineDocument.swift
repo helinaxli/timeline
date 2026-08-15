@@ -16,6 +16,7 @@ class TimelineDocument {
     @Relationship(deleteRule: .cascade) var events: [Event] = []
     @Relationship(deleteRule: .cascade) var years: [FantasyYear] = []
     @Relationship(deleteRule: .cascade) var characters: [StoryChar] = []
+    var colorPalette: [Color] = []
 
     init(title: String = "Untitled", config: TimelineConfig) {
         self.title = title

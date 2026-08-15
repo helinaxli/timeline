@@ -142,7 +142,7 @@ struct CharCardView: View {
         }
         .padding(16)
         .frame(width: 1000) // Fixed width, flexible height
-        .frame(minHeight: 100) // Ensures consistent minimum height
+        // .frame(minHeight: 100) // Ensures consistent minimum height
         // .background(.secondary.opacity(0.2))
         .background(Color(.windowBackgroundColor))
         .cornerRadius(12)

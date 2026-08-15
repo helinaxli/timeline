@@ -31,6 +31,32 @@ struct NewArcSheet: View {
             TextField("Summary", text: $arc.summary, axis: .vertical)
                 .textFieldStyle(.roundedBorder)
             
+            // Color
+            VStack(alignment: .leading, spacing: 0) {
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 0) {
+                        ForEach(document.colorPalette) { col in
+                            Button(action: {
+                                // selected color
+                            }) {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(col.name)
+                                            .font(.body)
+                                            .foregroundColor(col)
+                                    }
+                                    Spacer()
+                                }
+                                .padding(.vertical, 8)
+                                .padding(.horizontal, 12)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+                .frame(maxHeight: 200)
+            }
+            
             HStack {
                 Button("Cancel", role: .cancel) {
                     dismiss()
