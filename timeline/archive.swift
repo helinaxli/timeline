@@ -67,3 +67,17 @@
 //        "\(node.year) / \(node.month.map(String.init) ?? "MM") / \(node.day.map(String.init) ?? "DD")"
 //    }
 //}
+
+//.onTapGesture(count: 2) {
+//    let oldOffset = node.xOffset
+//    guard oldOffset != 0 else { return }
+//    
+//    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+//        node.xOffset = 0
+//    }
+//    
+//    undoManager?.registerUndo(withTarget: document) { _ in
+//        node.xOffset = oldOffset
+//    }
+//    undoManager?.setActionName("Reset Node Position")
+//}

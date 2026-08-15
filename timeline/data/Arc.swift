@@ -11,15 +11,17 @@ import SwiftData
 @Model
 class Arc: Identifiable {
     var id: UUID
-    var title: String
+    var title: String = "nil"
+    var side: String
+    var summary: String = ""
     
     @Relationship(inverse: \Event.arcs)
     var events: [Event] = []
     @Relationship(inverse: \StoryChar.arcs)
     var characters: [StoryChar] = []
     
-    init(id: UUID = UUID(), title: String) {
+    init(id: UUID = UUID(), side: String = "left") {
         self.id = id
-        self.title = title
+        self.side = side
     }
 }
