@@ -14,8 +14,8 @@ struct TimelinePanel: View {
     let topInset: CGFloat = 20
     @State private var pointsPerYear: CGFloat = 80.0
          
-    // Axis layout properties (Expanded canvas width to prevent negative coordinate clipping)
-    private let axisX: CGFloat = 500 // X-coordinate of vertical ruler in a 1000pt wide canvas
+    // Axis layout properties
+    private let axisX: CGFloat = 500
     private let tickLength: CGFloat = 10
     var startYear: Int { document.config.startYear }
     var endYear: Int { document.config.endYear }
@@ -41,7 +41,16 @@ struct TimelinePanel: View {
                 .padding(.top, 40)
             }
             .sheet(item: $editingEvent) { curr_event in
-                NewEventSheet(document: document, isPresented: $isShowingEventEditSheet, eventToEdit: curr_event)
+                NewEventSheet(
+                    document: document,
+                    isPresented: Binding(
+                        get: { editingEvent != nil },
+                        set: { isPresenting in
+                            if !isPresenting { editingEvent = nil }
+                        }
+                    ),
+                    eventToEdit: curr_event
+                )
             }
         }
     }
@@ -99,26 +108,40 @@ struct TimelinePanel: View {
                         .frame(width: connectorWidth, height: 2)
                         .position(x: axisX - (connectorWidth / 2), y: yPos)
                      
-                    NodeCardView(node: $node, document: document, isLeft: isLeft, axisX: axisX, onEdit: {
-                        editingEvent = node
-                    },
-                    onDelete: {
-                        deleteEvent(node)
-                    })
-                        .position(x: axisX - connectorWidth - (node.size.width / 2), y: yPos)
+                    NodeCardView(
+                        node: $node,
+                        document: document,
+                        isLeft: isLeft,
+                        axisX: axisX,
+                        onEdit: {
+                            editingEvent = node
+                            isShowingEventEditSheet = true
+                        },
+                        onDelete: {
+                            deleteEvent(node)
+                        }
+                    )
+                    .position(x: axisX - connectorWidth - (node.size.width / 2), y: yPos)
                 } else {
                     Rectangle()
                         .fill(Color.secondary)
                         .frame(width: connectorWidth, height: 2)
                         .position(x: axisX + (connectorWidth / 2), y: yPos)
                      
-                    NodeCardView(node: $node, document: document, isLeft: isLeft, axisX: axisX, onEdit: {
-                        editingEvent = node
-                    },
-                    onDelete: {
-                        deleteEvent(node)
-                    })
-                        .position(x: axisX + connectorWidth + (node.size.width / 2), y: yPos)
+                    NodeCardView(
+                        node: $node,
+                        document: document,
+                        isLeft: isLeft,
+                        axisX: axisX,
+                        onEdit: {
+                            editingEvent = node
+                            isShowingEventEditSheet = true
+                        },
+                        onDelete: {
+                            deleteEvent(node)
+                        }
+                    )
+                    .position(x: axisX + connectorWidth + (node.size.width / 2), y: yPos)
                 }
             }
         }
@@ -129,18 +152,17 @@ struct TimelinePanel: View {
             document.events.removeAll { $0.id == event.id }
             
             let yearIndex = event.year - document.config.startYear
-                if document.years.indices.contains(yearIndex) {
-                    let matchingYear = document.years[yearIndex]
-                    matchingYear.events.removeAll { $0.id == event.id }
-                    
-                    // 3. Locate matching FantasyMonth inside that year
-                    if let month = event.month {
-                        if matchingYear.months.indices.contains(month - 1) {
-                            let matchingMonth = matchingYear.months[month - 1]
-                            matchingMonth.events.removeAll { $0.id == event.id }
-                        }
+            if document.years.indices.contains(yearIndex) {
+                let matchingYear = document.years[yearIndex]
+                matchingYear.events.removeAll { $0.id == event.id }
+                
+                if let month = event.month {
+                    if matchingYear.months.indices.contains(month - 1) {
+                        let matchingMonth = matchingYear.months[month - 1]
+                        matchingMonth.events.removeAll { $0.id == event.id }
                     }
                 }
+            }
         }
     }
     
@@ -193,6 +215,7 @@ struct NodeCardView: View {
     var onEdit: (() -> Void)? = nil
     var onDelete: (() -> Void)? = nil
     
+    @State private var isShowingEventCard = false
     @Environment(\.undoManager) private var undoManager
 
     private let minWidth: CGFloat = 180
@@ -210,27 +233,6 @@ struct NodeCardView: View {
                 .font(.body)
             Text(node.details)
                 .font(.body)
-            
-            Spacer()
-            
-            HStack {
-                Spacer()
-                
-                HStack(spacing: 12) {
-                    Button(action: { onEdit?() }) {
-                        Image(systemName: "pencil")
-                            .font(.caption)
-                    }
-                    .accessibilityLabel("Edit")
-                    
-                    Button(role: .destructive, action: { onDelete?() }) {
-                        Image(systemName: "trash")
-                            .font(.caption)
-                    }
-                    .accessibilityLabel("Delete")
-                }
-                .buttonStyle(.borderless)
-            }
         }
         .padding(16)
         .frame(width: node.size.width, height: node.size.height, alignment: .topLeading)
@@ -241,7 +243,6 @@ struct NodeCardView: View {
             RoundedRectangle(cornerRadius: 12)
                 .strokeBorder(Color.accentColor, lineWidth: 2)
         )
-        // Move gesture isolated to card body background
         .gesture(
             DragGesture(minimumDistance: 2)
                 .onChanged { value in
@@ -270,17 +271,39 @@ struct NodeCardView: View {
                     dragStartOffset = nil
                 }
         )
-        // Corner handles retain independent resize gestures without interference
         .overlay(alignment: .topLeading) { cornerHandle(xMultiplier: -1, yMultiplier: -1) }
         .overlay(alignment: .topTrailing) { cornerHandle(xMultiplier: 1, yMultiplier: -1) }
         .overlay(alignment: .bottomLeading) { cornerHandle(xMultiplier: -1, yMultiplier: 1) }
         .overlay(alignment: .bottomTrailing) { cornerHandle(xMultiplier: 1, yMultiplier: 1) }
-        .onTapGesture(count:2) {
-            if node.side == "left" {
-                node.side = "right"
-            } else {
-                node.side = "left"
+        .onTapGesture(count: 2) {
+            node.side = (node.side == "left") ? "right" : "left"
+        }
+        .contextMenu {
+            Button("Open") {
+                isShowingEventCard = true
             }
+            Button("Edit") {
+                onEdit?()
+            }
+            Button("Delete", role: .destructive) {
+                onDelete?()
+            }
+        }
+        .sheet(isPresented: $isShowingEventCard) {
+            EventCard(
+                node: $node,
+                onEdit: {
+                    // 1. Dismiss the EventCard detail sheet
+                    isShowingEventCard = false
+                    
+                    // 2. Bubble up the edit action to TimelinePanel
+                    onEdit?()
+                },
+                onDelete: {
+                    isShowingEventCard = false
+                    onDelete?()
+                }
+            )
         }
     }
 
@@ -294,7 +317,6 @@ struct NodeCardView: View {
                         if dragStartSize == nil {
                             dragStartSize = node.size
                         }
-                        
                         guard let startSize = dragStartSize else { return }
 
                         let deltaW = value.translation.width * xMultiplier

@@ -1,0 +1,57 @@
+//
+//  EventCard.swift
+//  timeline
+//
+//  Created by Helina L. on 8/14/26.
+//
+
+import SwiftUI
+
+struct EventCard: View {
+    @Binding var node: Event
+    
+    var onEdit: (() -> Void)? = nil
+    var onDelete: (() -> Void)? = nil
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(node.title)
+                .font(.title2)
+                .bold()
+            Text(formattedDate)
+                .font(.body)
+            Text(node.details)
+                .font(.body)
+            
+            // Characters
+            // Arcs
+            
+            Spacer()
+            
+            HStack {
+                Spacer()
+                
+                HStack(spacing: 12) {
+                    Button(action: { onEdit?() }) {
+                        Image(systemName: "pencil")
+                            .font(.caption)
+                    }
+                    .accessibilityLabel("Edit")
+                    
+                    Button(role: .destructive, action: { onDelete?() }) {
+                        Image(systemName: "trash")
+                            .font(.caption)
+                    }
+                    .accessibilityLabel("Delete")
+                }
+                .buttonStyle(.borderless)
+            }
+        }
+        .padding(20)
+        .frame(minWidth: 350, minHeight: 250)
+    }
+    
+    private var formattedDate: String {
+        "\(node.year) / \(node.month.map(String.init) ?? "MM") / \(node.day.map(String.init) ?? "DD")"
+    }
+}
