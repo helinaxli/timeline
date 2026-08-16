@@ -17,6 +17,7 @@ struct ArcView: View {
     @State private var editingArc: Arc? = nil
     
     var body: some View {
+        
         NavigationStack {
             Text("Arcs")
                 .font(.title)

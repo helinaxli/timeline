@@ -26,11 +26,15 @@ struct TimelineDocumentView: View {
     @Bindable var document: TimelineDocument
     @State private var showSetupSheet = false
     
+    @Environment(AppState.self) private var appState
+    
     @State private var isShowingNewEventSheet = false
     @State private var isShowingNewStoryCharSheet = false
     @State private var isShowingNewArcSheet = false
 
     var body: some View {
+        @Bindable var appState = appState
+        
         NavigationStack {
             VStack {
                 if document.config.isConfigured {
@@ -44,6 +48,24 @@ struct TimelineDocumentView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     HStack {
+//                        Button("View All Arcs and Events", systemImage: "eye") {
+//                            appState.showVisibleArcsOnly.toggle()
+//                        }
+                        Button {
+                            // 1. Action logic (state changes go here)
+                            appState.showVisibleArcsOnly.toggle()
+                            
+//                            if appState.showVisibleArcsOnly {
+//                                document.visibleArcs.append(node)
+//                            } else {
+//                                document.visibleArcs.removeAll { $0.id == node.id }
+//                            }
+                        } label: {
+                            // 2. View layout (only views go here)
+                            Image(systemName: appState.showVisibleArcsOnly ? "eye" : "eye.fill")
+                                .font(.caption)
+                        }
+                        
                         NavigationLink {
                             CharacterView(document: document)
                         } label: {

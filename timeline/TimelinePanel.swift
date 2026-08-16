@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct TimelinePanel: View {
+    @Environment(AppState.self) private var appState
+    
     @Bindable var document: TimelineDocument
     @Environment(\.undoManager) private var undoManager
     
@@ -84,65 +86,84 @@ struct TimelinePanel: View {
         }
     }
     
+    @ViewBuilder
     private func nodeOverlay() -> some View {
-        ForEach($document.events) { $node in
-            let yPos = yPosition(event: node)
-            let isLeft = node.side == "left"
-            
-            let clampedOffset: CGFloat = {
-                if isLeft {
-                    return min(0, max(-axisX + 100, node.xOffset))
-                } else {
-                    return max(0, min(1000 - axisX - 100, node.xOffset))
+        @Bindable var appState = appState
+        
+        if appState.showVisibleArcsOnly {
+            ForEach($document.visibleArcs) { $arc in
+                ForEach($arc.events) { $node in
+                    nodeView(node: $node, arcColor: arc.myColor)
                 }
-            }()
-             
-            let baseLineWidth: CGFloat = 40
-            let extraDistance = isLeft ? -clampedOffset : clampedOffset
-            let connectorWidth = baseLineWidth + extraDistance
-             
-            ZStack {
-                if isLeft {
-                    Rectangle()
-                        .fill(Color.secondary)
-                        .frame(width: connectorWidth, height: 2)
-                        .position(x: axisX - (connectorWidth / 2), y: yPos)
-                     
-                    NodeCardView(
-                        node: $node,
-                        document: document,
-                        isLeft: isLeft,
-                        axisX: axisX,
-                        onEdit: {
-                            editingEvent = node
-                            isShowingEventEditSheet = true
-                        },
-                        onDelete: {
-                            deleteEvent(node)
-                        }
-                    )
-                    .position(x: axisX - connectorWidth - (node.size.width / 2), y: yPos)
-                } else {
-                    Rectangle()
-                        .fill(Color.secondary)
-                        .frame(width: connectorWidth, height: 2)
-                        .position(x: axisX + (connectorWidth / 2), y: yPos)
-                     
-                    NodeCardView(
-                        node: $node,
-                        document: document,
-                        isLeft: isLeft,
-                        axisX: axisX,
-                        onEdit: {
-                            editingEvent = node
-                            isShowingEventEditSheet = true
-                        },
-                        onDelete: {
-                            deleteEvent(node)
-                        }
-                    )
-                    .position(x: axisX + connectorWidth + (node.size.width / 2), y: yPos)
-                }
+            }
+        } else {
+            ForEach($document.events) { $node in
+                nodeView(node: $node, arcColor: "Default")
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func nodeView(node: Binding<Event>, arcColor: String) -> some View {
+        let nodeReadOnly = node.wrappedValue
+        let yPos = yPosition(event: nodeReadOnly)
+        let isLeft = nodeReadOnly.side == "left"
+        
+        let clampedOffset: CGFloat = {
+            if isLeft {
+                return min(0, max(-axisX + 100, nodeReadOnly.xOffset))
+            } else {
+                return max(0, min(1000 - axisX - 100, nodeReadOnly.xOffset))
+            }
+        }()
+         
+        let baseLineWidth: CGFloat = 40
+        let extraDistance = isLeft ? -clampedOffset : clampedOffset
+        let connectorWidth = baseLineWidth + extraDistance
+         
+        ZStack {
+            if isLeft {
+                Rectangle()
+                    .fill(Color.secondary)
+                    .frame(width: connectorWidth, height: 2)
+                    .position(x: axisX - (connectorWidth / 2), y: yPos)
+                 
+                NodeCardView(
+                    node: node,
+                    document: document,
+                    isLeft: isLeft,
+                    axisX: axisX,
+                    arcColor: arcColor,
+                    onEdit: {
+                        editingEvent = nodeReadOnly
+                        isShowingEventEditSheet = true
+                    },
+                    onDelete: {
+                        deleteEvent(nodeReadOnly)
+                    }
+                )
+                .position(x: axisX - connectorWidth - (nodeReadOnly.size.width / 2), y: yPos)
+            } else {
+                Rectangle()
+                    .fill(Color.secondary)
+                    .frame(width: connectorWidth, height: 2)
+                    .position(x: axisX + (connectorWidth / 2), y: yPos)
+                 
+                NodeCardView(
+                    node: node,
+                    document: document,
+                    isLeft: isLeft,
+                    axisX: axisX,
+                    arcColor: arcColor,
+                    onEdit: {
+                        editingEvent = nodeReadOnly
+                        isShowingEventEditSheet = true
+                    },
+                    onDelete: {
+                        deleteEvent(nodeReadOnly)
+                    }
+                )
+                .position(x: axisX + connectorWidth + (nodeReadOnly.size.width / 2), y: yPos)
             }
         }
     }
@@ -217,7 +238,7 @@ struct NodeCardView: View {
     var document: TimelineDocument
     var isLeft: Bool
     var axisX: CGFloat
-    var arcColor: String = "Default"
+    var arcColor: String
     
     var onEdit: (() -> Void)? = nil
     var onDelete: (() -> Void)? = nil
@@ -243,7 +264,8 @@ struct NodeCardView: View {
         }
         .padding(16)
         .frame(width: node.size.width, height: node.size.height, alignment: .topLeading)
-        .background(Color(.windowBackgroundColor))
+        // .background(Color(.windowBackgroundColor))
+        .background(document.whatColor(name: arcColor).1)
         .contentShape(Rectangle())
         .cornerRadius(12)
         .overlay(

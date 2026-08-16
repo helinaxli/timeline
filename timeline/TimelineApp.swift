@@ -18,12 +18,15 @@ extension UTType {
 
 @main
 struct TimelineApp: App {
+    @State private var appState = AppState()
+    
     var body: some Scene {
         DocumentGroup(
             editing: TimelineDocument.self,
             contentType: .projectFile,
             editor: {
                 TimelineDocumentContainerView()
+                    .environment(appState)
             },
             prepareDocument: { context in
                 let config = TimelineConfig()
