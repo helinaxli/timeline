@@ -10,6 +10,7 @@ import SwiftUI
 struct EventCard: View {
     @Binding var node: Event
     
+    @Environment(\.dismiss) private var dismiss
     var onEdit: (() -> Void)? = nil
     var onDelete: (() -> Void)? = nil
     
@@ -33,6 +34,14 @@ struct EventCard: View {
                         .font(.caption)
                 }
                 .accessibilityLabel("Delete")
+                
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.caption)
+                }
+                .accessibilityLabel("Close")
             }
             .buttonStyle(.borderless)
             

@@ -84,6 +84,13 @@ struct CharacterView: View {
             .keyboardShortcut("[", modifiers: .command)
             .hidden()
         )
+        .background(
+            Button("") {
+                dismiss()
+            }
+            .keyboardShortcut("1", modifiers: .command)
+            .hidden()
+        )
         // Sheet for creating a new character
         .sheet(isPresented: $isShowingNewStoryCharSheet) {
             NewStoryCharSheet(document: document, isPresented: $isShowingNewStoryCharSheet)

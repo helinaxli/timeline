@@ -97,14 +97,14 @@ struct TimelineDocumentView: View {
                 Button("") {
                     navigationPath.append(AppRoute.character)
                 }
-                .keyboardShortcut("1", modifiers: .command)
+                .keyboardShortcut("2", modifiers: .command)
                 .opacity(0) // Use opacity(0) instead of .hidden() to preserve shortcut routing
             )
             .background(
                 Button("") {
                     navigationPath.append(AppRoute.arc)
                 }
-                .keyboardShortcut("2", modifiers: .command)
+                .keyboardShortcut("3", modifiers: .command)
                 .opacity(0) // Use opacity(0) instead of .hidden() to preserve shortcut routing
             )
             .task(id: document) {
