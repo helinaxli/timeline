@@ -32,32 +32,32 @@ struct NewArcSheet: View {
                 .textFieldStyle(.roundedBorder)
             
             // Color
-//            VStack(alignment: .leading, spacing: 0) {
-//                ScrollView {
-//                    LazyVStack(alignment: .leading, spacing: 0) {
-//                        // Fix 1 & 2: Use id: \.self to iterate over [Color] directly
-//                        ForEach(document.colorPalette, id: \.self) { col in
-//                            Button(
-//                                action: {
-//                                    arc.myColor = col
-//                                },
-//                                label: {
-//                                    HStack {
-//                                        Text(col.name)
-//                                            .foregroundColor(col.fgColor)
-//                                        Spacer()
-//                                    }
-//                                    .padding(.vertical, 8)
-//                                    .padding(.horizontal, 12)
-//                                    .background(col.bgColor)
-//                                }
-//                            )
-//                            .buttonStyle(.plain)
-//                        }
-//                    }
-//                }
-//                .frame(maxHeight: 200)
-//            }
+            VStack(alignment: .leading, spacing: 0) {
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 0) {
+                        // Fix 1 & 2: Use id: \.self to iterate over [Color] directly
+                        ForEach(document.colorPalette, id: \.self) { col in
+                            Button(
+                                action: {
+                                    arc.myColor = col
+                                },
+                                label: {
+                                    HStack {
+                                        Text(col)
+                                            .foregroundColor(whatColor(name: col).0)
+                                        Spacer()
+                                    }
+                                    .padding(.vertical, 8)
+                                    .padding(.horizontal, 12)
+                                    .background(whatColor(name: col).1)
+                                }
+                            )
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+                .frame(maxHeight: 200)
+            }
             
             HStack {
                 Button("Cancel", role: .cancel) {
@@ -89,5 +89,29 @@ struct NewArcSheet: View {
         } else {
             document.arcs.append(arc)
         }
+    }
+}
+
+public func whatColor(name: String) -> (Color, Color) {
+    if name == "Red" {
+        return (.red, .red.opacity(0.15))
+    } else if name == "Orange" {
+        return (.orange, .orange.opacity(0.15))
+    } else if name == "Yellow" {
+        return (.yellow, .yellow.opacity(0.15))
+    } else if name == "Green" {
+        return (.green, .green.opacity(0.15))
+    } else if name == "Mint" {
+        return (.mint, .mint.opacity(0.15))
+    } else if name == "Blue" {
+        return (.blue, .blue.opacity(0.15))
+    } else if name == "Purple" {
+        return (.purple, .purple.opacity(0.15))
+    } else if name == "Indigo" {
+        return (.indigo, .indigo.opacity(0.15))
+    } else if name == "Pink" {
+        return (.pink, .pink.opacity(0.15))
+    } else {
+        return (.black, .white)
     }
 }
