@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct ColorOption: Identifiable, Hashable, Codable {
-    let id: UUID
+struct ColorOption: Hashable, Codable, Sendable {
+    // let id: UUID
     let name: String
     let fgHex: String
     let bgHex: String
@@ -16,8 +16,7 @@ struct ColorOption: Identifiable, Hashable, Codable {
     var fgColor: Color { Color(hex: fgHex) }
     var bgColor: Color { Color(hex: bgHex) }
 
-    init(id: UUID = UUID(), name: String, fgHex: String, bgHex: String) {
-        self.id = id
+    init(name: String, fgHex: String, bgHex: String) {
         self.name = name
         self.fgHex = fgHex
         self.bgHex = bgHex

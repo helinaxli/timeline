@@ -18,19 +18,20 @@ class TimelineDocument {
     @Relationship(deleteRule: .cascade) var years: [FantasyYear] = []
     @Relationship(deleteRule: .cascade) var characters: [StoryChar] = []
     // TimelineDocument.swift
-    var colorPalette: [ColorOption] = [
-        ColorOption(name: "Default", fgHex: "#000000", bgHex: "#FFFFFF"),
-        ColorOption(name: "Red", fgHex: "#FF0000", bgHex: "#FF000026"),
-        ColorOption(name: "Orange", fgHex: "#FFA500", bgHex: "#FFA50026"),
-        ColorOption(name: "Yellow", fgHex: "#FFFF00", bgHex: "#FFFF0026"),
-        ColorOption(name: "Green", fgHex: "#008000", bgHex: "#00800026"),
-        ColorOption(name: "Mint", fgHex: "#00C7BE", bgHex: "#00C7BE26"),
-        ColorOption(name: "Blue", fgHex: "#0000FF", bgHex: "#0000FF26"),
-        ColorOption(name: "Purple", fgHex: "#800080", bgHex: "#80008026"),
-        ColorOption(name: "Indigo", fgHex: "#4B0082", bgHex: "#4B008226"),
-        ColorOption(name: "Pink", fgHex: "#FFC0CB", bgHex: "#FFC0CB26")
-    ]
-    var defaultColor = ColorOption(name: "Default", fgHex: "#000000", bgHex: "#FFFFFF")
+//    var colorPalette: [ColorOption] = [
+//        ColorOption(name: "Default", fgHex: "#000000", bgHex: "#FFFFFF"),
+//        ColorOption(name: "Red", fgHex: "#FF0000", bgHex: "#FF000026"),
+//        ColorOption(name: "Orange", fgHex: "#FFA500", bgHex: "#FFA50026"),
+//        ColorOption(name: "Yellow", fgHex: "#FFFF00", bgHex: "#FFFF0026"),
+//        ColorOption(name: "Green", fgHex: "#008000", bgHex: "#00800026"),
+//        ColorOption(name: "Mint", fgHex: "#00C7BE", bgHex: "#00C7BE26"),
+//        ColorOption(name: "Blue", fgHex: "#0000FF", bgHex: "#0000FF26"),
+//        ColorOption(name: "Purple", fgHex: "#800080", bgHex: "#80008026"),
+//        ColorOption(name: "Indigo", fgHex: "#4B0082", bgHex: "#4B008226"),
+//        ColorOption(name: "Pink", fgHex: "#FFC0CB", bgHex: "#FFC0CB26")
+//    ]
+    
+    // var defaultColor = ColorOption(name: "Default", fgHex: "#000000", bgHex: "#FFFFFF")
     
     init(title: String = "Untitled", config: TimelineConfig) {
         self.title = title

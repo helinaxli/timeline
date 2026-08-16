@@ -32,32 +32,32 @@ struct NewArcSheet: View {
                 .textFieldStyle(.roundedBorder)
             
             // Color
-            VStack(alignment: .leading, spacing: 0) {
-                ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 0) {
-                        // Fix 1 & 2: Use id: \.self to iterate over [Color] directly
-                        ForEach(document.colorPalette, id: \.self) { col in
-                            Button(
-                                action: {
-                                    arc.myColor = col
-                                },
-                                label: {
-                                    HStack {
-                                        Text(col.name)
-                                            .foregroundColor(col.fgColor)
-                                        Spacer()
-                                    }
-                                    .padding(.vertical, 8)
-                                    .padding(.horizontal, 12)
-                                    .background(col.bgColor)
-                                }
-                            )
-                            .buttonStyle(.plain)
-                        }
-                    }
-                }
-                .frame(maxHeight: 200)
-            }
+//            VStack(alignment: .leading, spacing: 0) {
+//                ScrollView {
+//                    LazyVStack(alignment: .leading, spacing: 0) {
+//                        // Fix 1 & 2: Use id: \.self to iterate over [Color] directly
+//                        ForEach(document.colorPalette, id: \.self) { col in
+//                            Button(
+//                                action: {
+//                                    arc.myColor = col
+//                                },
+//                                label: {
+//                                    HStack {
+//                                        Text(col.name)
+//                                            .foregroundColor(col.fgColor)
+//                                        Spacer()
+//                                    }
+//                                    .padding(.vertical, 8)
+//                                    .padding(.horizontal, 12)
+//                                    .background(col.bgColor)
+//                                }
+//                            )
+//                            .buttonStyle(.plain)
+//                        }
+//                    }
+//                }
+//                .frame(maxHeight: 200)
+//            }
             
             HStack {
                 Button("Cancel", role: .cancel) {
