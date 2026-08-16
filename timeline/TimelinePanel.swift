@@ -217,6 +217,7 @@ struct NodeCardView: View {
     var document: TimelineDocument
     var isLeft: Bool
     var axisX: CGFloat
+    var arcColor: String = "Default"
     
     var onEdit: (() -> Void)? = nil
     var onDelete: (() -> Void)? = nil

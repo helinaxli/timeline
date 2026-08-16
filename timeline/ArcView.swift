@@ -93,6 +93,24 @@ struct ArcCardView: View {
                 Spacer()
                 
                 Button {
+                    for event in node.events {
+                        event.side = "left"
+                    }
+                } label: {
+                    Image(systemName: "hand.point.left.fill")
+                        .font(.caption)
+                }
+                
+                Button {
+                    for event in node.events {
+                        event.side = "right"
+                    }
+                } label: {
+                    Image(systemName: "hand.point.right.fill")
+                        .font(.caption)
+                }
+                
+                Button {
                     // 1. Action logic (state changes go here)
                     node.visible.toggle()
                     
