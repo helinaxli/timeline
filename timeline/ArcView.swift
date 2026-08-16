@@ -85,42 +85,40 @@ struct ArcCardView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
+            HStack(spacing: 12) {
+                Text(node.title)
+                    .font(.title)
+                    .bold()
+                
                 Spacer()
                 
-                HStack(spacing: 12) {
-                    Button(action: { onEdit?() }) {
-                        Image(systemName: "pencil")
-                            .font(.caption)
-                    }
-                    .accessibilityLabel("Edit")
-                    
-                    Button(role: .destructive, action: { onDelete?() }) {
-                        Image(systemName: "trash")
-                            .font(.caption)
-                    }
-                    .accessibilityLabel("Delete")
+                Button(action: { onEdit?() }) {
+                    Image(systemName: "pencil")
+                        .font(.caption)
                 }
-                .buttonStyle(.borderless)
+                .accessibilityLabel("Edit")
+                
+                Button(role: .destructive, action: { onDelete?() }) {
+                    Image(systemName: "trash")
+                        .font(.caption)
+                }
+                .accessibilityLabel("Delete")
             }
-            
-            Text(node.title)
-                .font(.largeTitle)
-                .bold()
-            
+            .buttonStyle(.borderless)
+        
             Text(node.summary)
                 .font(.body)
                 .multilineTextAlignment(.leading)
             
             Text("Characters")
-                .font(.title)
+                .font(.title2)
             ForEach(node.characters) { storyc in
                 Text(storyc.name)
                     .font(.body)
             }
             
             Text("Events")
-                .font(.title)
+                .font(.title2)
             ForEach(node.events) { event in
                 HStack(spacing: 10) {
                     Text(event.title)

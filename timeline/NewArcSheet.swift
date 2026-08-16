@@ -42,22 +42,22 @@ struct NewArcSheet: View {
                 }) {
                     HStack {
                         Text(arc.myColor.isEmpty ? "Select Color" : arc.myColor)
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.black)
+                            .font(.body)
+                            // .fontWeight(.semibold)
+                            .foregroundColor(whatColor(name: arc.myColor).0)
                         
                         Spacer()
                         
                         Image(systemName: "chevron.up")
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundColor(.blue)
+                            .font(.body)
                             .rotationEffect(.degrees(isExpanded ? 0 : 180))
                     }
                     .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
-                    .background(Color.white)
+                    .padding(.vertical, 6)
+                    .background(whatColor(name: arc.myColor).1)
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.blue, lineWidth: 2)
+                            .stroke(Color.black, lineWidth: 1)
                     )
                 }
                 .buttonStyle(.plain)
@@ -75,24 +75,26 @@ struct NewArcSheet: View {
                                 }) {
                                     HStack {
                                         Text(col)
+                                            .font(.body)
                                             .foregroundColor(whatColor(name: col).0)
-                                            .fontWeight(.semibold)
+                                            //.fontWeight(.semibold)
                                         Spacer()
                                     }
-                                    .padding(.vertical, 10)
+                                    .padding(.vertical, 6)
                                     .padding(.horizontal, 16)
                                     .background(whatColor(name: col).1)
                                 }
                                 .buttonStyle(.plain)
                             }
                         }
+                        .id(document.colorPalette)
                     }
                     .frame(maxHeight: 180)
                     .background(Color.white)
                     .cornerRadius(8)
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.blue, lineWidth: 2)
+                            .stroke(Color.black, lineWidth: 1)
                     )
                     .shadow(color: Color.black.opacity(0.15), radius: 6, x: 2, y: 4)
                 }
@@ -119,6 +121,7 @@ struct NewArcSheet: View {
             if let arcToEdit {
                 arc = arcToEdit
             }
+            // document.colorPalette = ["Default", "Red", "Orange", "Yellow", "Green", "Mint", "Blue", "Indigo", "Purple", "Pink"]
         }
     }
     
@@ -133,23 +136,23 @@ struct NewArcSheet: View {
 
 public func whatColor(name: String) -> (Color, Color) {
     if name == "Red" {
-        return (.red, .red.opacity(0.15))
+        return (.black, .red.opacity(0.15))
     } else if name == "Orange" {
-        return (.orange, .orange.opacity(0.15))
+        return (.black, .orange.opacity(0.15))
     } else if name == "Yellow" {
-        return (.yellow, .yellow.opacity(0.15))
+        return (.black, .yellow.opacity(0.15))
     } else if name == "Green" {
-        return (.green, .green.opacity(0.15))
+        return (.black, .green.opacity(0.15))
     } else if name == "Mint" {
-        return (.mint, .mint.opacity(0.15))
+        return (.black, .mint.opacity(0.15))
     } else if name == "Blue" {
-        return (.blue, .blue.opacity(0.15))
+        return (.black, .blue.opacity(0.15))
     } else if name == "Purple" {
-        return (.purple, .purple.opacity(0.15))
+        return (.black, .purple.opacity(0.15))
     } else if name == "Indigo" {
-        return (.indigo, .indigo.opacity(0.15))
+        return (.black, .indigo.opacity(0.15))
     } else if name == "Pink" {
-        return (.pink, .pink.opacity(0.15))
+        return (.black, .pink.opacity(0.15))
     } else {
         return (.black, .white)
     }
