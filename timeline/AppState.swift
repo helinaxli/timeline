@@ -9,5 +9,5 @@ import SwiftUI
 
 @Observable
 class AppState {
-    var showVisibleArcsOnly: Bool = false
+    var filterVisibleOnly: Bool = false
 }

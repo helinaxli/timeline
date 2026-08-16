@@ -16,7 +16,7 @@ class Arc: Identifiable {
     var side: String
     var summary: String = ""
     var myColor: String = "Default"
-    var visible: Bool = false
+    var visible: Bool = true
     
     @Relationship(inverse: \Event.arcs)
     var events: [Event] = []

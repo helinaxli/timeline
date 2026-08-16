@@ -90,21 +90,66 @@ struct TimelinePanel: View {
     private func nodeOverlay() -> some View {
         @Bindable var appState = appState
         
-        if appState.showVisibleArcsOnly {
-            ForEach($document.visibleArcs) { $arc in
-                ForEach($arc.events) { $node in
-                    nodeView(node: $node, arcColor: arc.myColor)
-                }
+        if appState.filterVisibleOnly {
+            // Step 1: Count how many times each event appears across visible arcs and characters
+            let eventColorMap = computeEventColors()
+            
+            // Step 2: Render unique visible events with resolved color priority
+            let allVisibleEvents = ($document.visibleArcs.flatMap { $0.events } + $document.visibleChars.flatMap { $0.events })
+            
+            // Remove duplicate bindings by ID to prevent duplicate SwiftUI views
+            let uniqueEvents = Dictionary(grouping: allVisibleEvents, by: { $0.wrappedValue.id })
+                .compactMap { $0.value.first }
+            
+            ForEach(uniqueEvents) { $node in
+                let resolvedColor = resolveColor(for: $node, fallbackColor: eventColorMap[node.id] ?? "Default")
+                nodeView(node: $node, myColor: resolvedColor)
             }
         } else {
             ForEach($document.events) { $node in
-                nodeView(node: $node, arcColor: "Default")
+                nodeView(node: $node, myColor: "Default")
             }
         }
     }
     
+    private func resolveColor(for node: Binding<Event>, fallbackColor: String) -> String {
+        if let manualColor = node.wrappedValue.nodeColor, !manualColor.isEmpty {
+            return manualColor
+        }
+        return fallbackColor
+    }
+    
+    /// Computes whether an event appears once (returns parent color) or multiple times (returns "Default")
+    private func computeEventColors() -> [Event.ID: String] {
+        var counts: [Event.ID: Int] = [:]
+        var colorMap: [Event.ID: String] = [:]
+        
+        // Process visible arcs
+        for arc in document.visibleArcs {
+            for event in arc.events {
+                counts[event.id, default: 0] += 1
+                colorMap[event.id] = arc.myColor
+            }
+        }
+        
+        // Process visible characters
+        for storyc in document.visibleChars {
+            for event in storyc.events {
+                counts[event.id, default: 0] += 1
+                colorMap[event.id] = storyc.myColor
+            }
+        }
+        
+        // Override color to "Default" for overlapping events
+        for (id, count) in counts where count > 1 {
+            colorMap[id] = "Default"
+        }
+        
+        return colorMap
+    }
+    
     @ViewBuilder
-    private func nodeView(node: Binding<Event>, arcColor: String) -> some View {
+    private func nodeView(node: Binding<Event>, myColor: String) -> some View {
         let nodeReadOnly = node.wrappedValue
         let yPos = yPosition(event: nodeReadOnly)
         let isLeft = nodeReadOnly.side == "left"
@@ -133,7 +178,7 @@ struct TimelinePanel: View {
                     document: document,
                     isLeft: isLeft,
                     axisX: axisX,
-                    arcColor: arcColor,
+                    myColor: myColor,
                     onEdit: {
                         editingEvent = nodeReadOnly
                         isShowingEventEditSheet = true
@@ -154,7 +199,7 @@ struct TimelinePanel: View {
                     document: document,
                     isLeft: isLeft,
                     axisX: axisX,
-                    arcColor: arcColor,
+                    myColor: myColor,
                     onEdit: {
                         editingEvent = nodeReadOnly
                         isShowingEventEditSheet = true
@@ -238,7 +283,7 @@ struct NodeCardView: View {
     var document: TimelineDocument
     var isLeft: Bool
     var axisX: CGFloat
-    var arcColor: String
+    var myColor: String
     
     var onEdit: (() -> Void)? = nil
     var onDelete: (() -> Void)? = nil
@@ -265,7 +310,7 @@ struct NodeCardView: View {
         .padding(16)
         .frame(width: node.size.width, height: node.size.height, alignment: .topLeading)
         // .background(Color(.windowBackgroundColor))
-        .background(document.whatColor(name: arcColor).1)
+        .background(document.whatColor(name: myColor).1)
         .contentShape(Rectangle())
         .cornerRadius(12)
         .overlay(

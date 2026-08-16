@@ -17,6 +17,7 @@ class StoryChar: Identifiable, Equatable {
     var bday_d: Int?
     var background: String = ""
     var myColor: String = "Default"
+    var visible: Bool = true
     
     var events: [Event] = []
     var arcs: [Arc] = []

@@ -124,6 +124,23 @@ struct CharCardView: View {
             HStack {
                 Spacer()
                 
+                Button {
+                    // 1. Action logic (state changes go here)
+                    node.visible.toggle()
+                    
+                    if node.visible {
+                        document.visibleChars.append(node)
+                    } else {
+                        document.visibleChars.removeAll { $0.id == node.id }
+                    }
+                } label: {
+                    // 2. View layout (only views go here)
+                    Image(systemName: node.visible ? "eye" : "eye.slash.fill")
+                        .font(.caption)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Toggle Arc Visibility")
+                
                 HStack(spacing: 12) {
                     Button(action: { onEdit?() }) {
                         Image(systemName: "pencil")
