@@ -15,9 +15,27 @@ struct EventCard: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(node.title)
-                .font(.title2)
-                .bold()
+            HStack(spacing: 12) {
+                Text(node.title)
+                    .font(.title2)
+                    .bold()
+                
+                Spacer()
+                
+                Button(action: { onEdit?() }) {
+                    Image(systemName: "pencil")
+                        .font(.caption)
+                }
+                .accessibilityLabel("Edit")
+                
+                Button(role: .destructive, action: { onDelete?() }) {
+                    Image(systemName: "trash")
+                        .font(.caption)
+                }
+                .accessibilityLabel("Delete")
+            }
+            .buttonStyle(.borderless)
+            
             Text(formattedDate)
                 .font(.body)
             
@@ -41,25 +59,6 @@ struct EventCard: View {
                 .font(.body)
             
             Spacer()
-            
-            HStack {
-                Spacer()
-                
-                HStack(spacing: 12) {
-                    Button(action: { onEdit?() }) {
-                        Image(systemName: "pencil")
-                            .font(.caption)
-                    }
-                    .accessibilityLabel("Edit")
-                    
-                    Button(role: .destructive, action: { onDelete?() }) {
-                        Image(systemName: "trash")
-                            .font(.caption)
-                    }
-                    .accessibilityLabel("Delete")
-                }
-                .buttonStyle(.borderless)
-            }
         }
         .padding(20)
         .frame(minWidth: 350, minHeight: 250)

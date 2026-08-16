@@ -126,45 +126,45 @@ struct CharCardView: View {
                     .foregroundColor(.secondary)
                 
                 Spacer()
-            }
-            
-            // Content: Background description
-            Text(node.background)
-                .font(.body)
-                .multilineTextAlignment(.leading)
-                .lineLimit(2) // Truncates gracefully if text is too long for the card height
-            
-            Text("Arcs")
-                .font(.headline)
-            ForEach(node.arcs) { arc in
-                Text(arc.title)
-                    .font(.body)
-            }
-            
-            // Bottom Action Bar
-            HStack {
-                Spacer()
-                
-                Button {
-                    // 1. Action logic (state changes go here)
-                    node.visible.toggle()
-                    
-                    if node.visible {
-                        document.visibleChars.append(node)
-                    } else {
-                        document.visibleChars.removeAll { $0.id == node.id }
-                    }
-                    
-                    document.showAllChars = document.visibleChars == document.characters
-                } label: {
-                    // 2. View layout (only views go here)
-                    Image(systemName: node.visible ? "eye" : "eye.slash.fill")
-                        .font(.caption)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Toggle Arc Visibility")
                 
                 HStack(spacing: 12) {
+                    Button {
+                        for event in node.events {
+                            event.side = "left"
+                        }
+                    } label: {
+                        Image(systemName: "hand.point.left.fill")
+                            .font(.caption)
+                    }
+                    
+                    Button {
+                        for event in node.events {
+                            event.side = "right"
+                        }
+                    } label: {
+                        Image(systemName: "hand.point.right.fill")
+                            .font(.caption)
+                    }
+                    
+                    Button {
+                        // 1. Action logic (state changes go here)
+                        node.visible.toggle()
+                        
+                        if node.visible {
+                            document.visibleChars.append(node)
+                        } else {
+                            document.visibleChars.removeAll { $0.id == node.id }
+                        }
+                        
+                        document.showAllChars = document.visibleChars == document.characters
+                    } label: {
+                        // 2. View layout (only views go here)
+                        Image(systemName: node.visible ? "eye" : "eye.slash.fill")
+                            .font(.caption)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Toggle Arc Visibility")
+                    
                     Button(action: { onEdit?() }) {
                         Image(systemName: "pencil")
                             .font(.caption)
@@ -179,17 +179,26 @@ struct CharCardView: View {
                 }
                 .buttonStyle(.borderless)
             }
+            
+            // Content: Background description
+            Text(node.background)
+                .font(.body)
+                .multilineTextAlignment(.leading)
+                .lineLimit(2) // Truncates gracefully if text is too long for the card height
+            
+            Text("Arcs")
+                .font(.headline)
+            ForEach(node.arcs) { arc in
+                Text(arc.title)
+                    .font(.body)
+            }
         }
         .padding(16)
         .frame(width: 1000) // Fixed width, flexible height
-        // .frame(minHeight: 100) // Ensures consistent minimum height
-        // .background(.secondary.opacity(0.2))
-        // .background(Color(.windowBackgroundColor))
         .background(document.whatColor(name: node.myColor).1)
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                // .strokeBorder(Color.accentColor, lineWidth: 2)
                 .strokeBorder(Color.black, lineWidth: 2)
         )
     }
