@@ -81,3 +81,55 @@
 //    }
 //    undoManager?.setActionName("Reset Node Position")
 //}
+
+// COLOR
+
+//            Picker("Select color", selection: $arc.myColor) {
+//                ForEach(document.colorPalette, id: \.self) { col in
+//                    Text(col)
+//                        .background(whatColor(name: col).1)
+//                }
+//            }
+//            .pickerStyle(.menu)
+
+//            Menu {
+//                ForEach(document.colorPalette, id: \.self) { col in
+//                    Button {
+//                        arc.myColor = col
+//                    } label: {
+//                        // Note: Menu items in macOS strip background colors,
+//                        // but Label icons will render color.
+//                        Label(col, systemImage: "circle.fill")
+//                            .tint(whatColor(name: col).1)
+//                    }
+//                }
+//            } label: {
+//                Text(arc.myColor)
+//            }
+
+//            VStack(alignment: .leading, spacing: 0) {
+//                ScrollView {
+//                    LazyVStack(alignment: .leading, spacing: 0) {
+//                        // Fix 1 & 2: Use id: \.self to iterate over [Color] directly
+//                        ForEach(document.colorPalette, id: \.self) { col in
+//                            Button(
+//                                action: {
+//                                    arc.myColor = col
+//                                },
+//                                label: {
+//                                    HStack {
+//                                        Text(col)
+//                                            .foregroundColor(whatColor(name: col).0)
+//                                        Spacer()
+//                                    }
+//                                    .padding(.vertical, 8)
+//                                    .padding(.horizontal, 12)
+//                                    .background(whatColor(name: col).1)
+//                                }
+//                            )
+//                            .buttonStyle(.plain)
+//                        }
+//                    }
+//                }
+//                .frame(maxHeight: 200)
+//            }

@@ -14,6 +14,7 @@ struct NewArcSheet: View {
     var arcToEdit: Arc? = nil
     @Environment(\.dismiss) private var dismiss
     @State private var arc = Arc(id: UUID())
+    @State private var isExpanded = false
     
     private var isEditing: Bool {
         arcToEdit != nil
@@ -32,31 +33,69 @@ struct NewArcSheet: View {
                 .textFieldStyle(.roundedBorder)
             
             // Color
-            VStack(alignment: .leading, spacing: 0) {
-                ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 0) {
-                        // Fix 1 & 2: Use id: \.self to iterate over [Color] directly
-                        ForEach(document.colorPalette, id: \.self) { col in
-                            Button(
-                                action: {
+            VStack(spacing: 6) {
+                // 1. Dropdown Header Button
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isExpanded.toggle()
+                    }
+                }) {
+                    HStack {
+                        Text(arc.myColor.isEmpty ? "Select Color" : arc.myColor)
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.black)
+                        
+                        Spacer()
+                        
+                        Image(systemName: "chevron.up")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(.blue)
+                            .rotationEffect(.degrees(isExpanded ? 0 : 180))
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .background(Color.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.blue, lineWidth: 2)
+                    )
+                }
+                .buttonStyle(.plain)
+
+                // 2. Expandable Items List
+                if isExpanded {
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: 0) {
+                            ForEach(document.colorPalette, id: \.self) { col in
+                                Button(action: {
                                     arc.myColor = col
-                                },
-                                label: {
+                                    withAnimation {
+                                        isExpanded = false
+                                    }
+                                }) {
                                     HStack {
                                         Text(col)
                                             .foregroundColor(whatColor(name: col).0)
+                                            .fontWeight(.semibold)
                                         Spacer()
                                     }
-                                    .padding(.vertical, 8)
-                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 10)
+                                    .padding(.horizontal, 16)
                                     .background(whatColor(name: col).1)
                                 }
-                            )
-                            .buttonStyle(.plain)
+                                .buttonStyle(.plain)
+                            }
                         }
                     }
+                    .frame(maxHeight: 180)
+                    .background(Color.white)
+                    .cornerRadius(8)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.blue, lineWidth: 2)
+                    )
+                    .shadow(color: Color.black.opacity(0.15), radius: 6, x: 2, y: 4)
                 }
-                .frame(maxHeight: 200)
             }
             
             HStack {
