@@ -15,11 +15,13 @@ struct ArcView: View {
     @State private var isShowingNewArcSheet = false
     @State private var showAllArcs = false
     
+    @Environment(\.dismiss) private var dismiss
+    
     @State private var editingArc: Arc? = nil
     
     var body: some View {
         
-        NavigationStack {
+        VStack {
             Text("Arcs")
                 .font(.title)
                 .padding(.top, 24)
@@ -31,58 +33,65 @@ struct ArcView: View {
                     }
                 }
             }
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    HStack {
-                        Button {
-                            document.showAllArcs.toggle()
-                            
-                            if document.showAllArcs {
-                                document.visibleArcs = document.arcs
-                                for arc in document.arcs {
-                                    arc.visible = true
-                                }
-                            } else {
-                                document.visibleArcs = []
-                                for arc in document.arcs {
-                                    arc.visible = false
-                                }
-                            }
-                        } label: {
-                            // 2. View layout (only views go here)
-                            Image(systemName: document.showAllArcs ? "eye" : "eye.slash.fill")
-                        }
+        }
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                HStack {
+                    Button {
+                        document.showAllArcs.toggle()
                         
-                        Menu("Add New", systemImage: "plus") {
-                            Button("New Character", systemImage: "person.badge.plus.fill") {
-                                isShowingNewStoryCharSheet = true
+                        if document.showAllArcs {
+                            document.visibleArcs = document.arcs
+                            for arc in document.arcs {
+                                arc.visible = true
                             }
-                            Button("New Event", systemImage: "calendar.badge.plus") {
-                                isShowingNewEventSheet = true
+                        } else {
+                            document.visibleArcs = []
+                            for arc in document.arcs {
+                                arc.visible = false
                             }
-                            Button("New Arc", systemImage: "folder.fill.badge.plus") {
-                                isShowingNewArcSheet = true
-                            }
+                        }
+                    } label: {
+                        // 2. View layout (only views go here)
+                        Image(systemName: document.showAllArcs ? "eye" : "eye.slash.fill")
+                    }
+                    
+                    Menu("Add New", systemImage: "plus") {
+                        Button("New Character", systemImage: "person.badge.plus.fill") {
+                            isShowingNewStoryCharSheet = true
+                        }
+                        Button("New Event", systemImage: "calendar.badge.plus") {
+                            isShowingNewEventSheet = true
+                        }
+                        Button("New Arc", systemImage: "folder.fill.badge.plus") {
+                            isShowingNewArcSheet = true
                         }
                     }
                 }
             }
-            // Sheet for creating a new character
-            .sheet(isPresented: $isShowingNewStoryCharSheet) {
-                NewStoryCharSheet(document: document, isPresented: $isShowingNewStoryCharSheet)
+        }
+        .background(
+            Button("") {
+                dismiss()
             }
-            // Sheet for editing an existing character (presents when editingCharacter != nil)
-            .sheet(isPresented: $isShowingNewEventSheet) {
-                NewEventSheet(document: document, isPresented: $isShowingNewEventSheet)
-            }
-            .sheet(isPresented: $isShowingNewArcSheet) {
-                NewArcSheet(document: document, isPresented: $isShowingNewArcSheet)
-            }
-            
-            .sheet(item: $editingArc) { arc in
-                // Pass the character to edit into your sheet
-                NewArcSheet(document: document, isPresented: $isShowingNewArcSheet, arcToEdit: arc)
-            }
+            .keyboardShortcut("[", modifiers: .command)
+            .hidden()
+        )
+        // Sheet for creating a new character
+        .sheet(isPresented: $isShowingNewStoryCharSheet) {
+            NewStoryCharSheet(document: document, isPresented: $isShowingNewStoryCharSheet)
+        }
+        // Sheet for editing an existing character (presents when editingCharacter != nil)
+        .sheet(isPresented: $isShowingNewEventSheet) {
+            NewEventSheet(document: document, isPresented: $isShowingNewEventSheet)
+        }
+        .sheet(isPresented: $isShowingNewArcSheet) {
+            NewArcSheet(document: document, isPresented: $isShowingNewArcSheet)
+        }
+        
+        .sheet(item: $editingArc) { arc in
+            // Pass the character to edit into your sheet
+            NewArcSheet(document: document, isPresented: $isShowingNewArcSheet, arcToEdit: arc)
         }
     }
     

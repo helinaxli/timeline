@@ -22,11 +22,18 @@ struct TimelineDocumentContainerView: View {
     }
 }
 
+enum AppRoute: Hashable {
+    case character
+    case arc
+}
+
 struct TimelineDocumentView: View {
     @Bindable var document: TimelineDocument
     @State private var showSetupSheet = false
     
     @Environment(AppState.self) private var appState
+    
+    @State private var navigationPath = NavigationPath()
     
     @State private var isShowingNewEventSheet = false
     @State private var isShowingNewStoryCharSheet = false
@@ -35,7 +42,7 @@ struct TimelineDocumentView: View {
     var body: some View {
         @Bindable var appState = appState
         
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             VStack {
                 if document.config.isConfigured {
                     TimelinePanel(document: document)
@@ -55,15 +62,11 @@ struct TimelineDocumentView: View {
                             Image(systemName: appState.filterVisibleOnly ? "eye" : "eye.fill")
                         }
                         
-                        NavigationLink {
-                            CharacterView(document: document)
-                        } label: {
+                        NavigationLink(value: AppRoute.character) {
                             Label("Character View", systemImage: "person.fill")
                         }
                         
-                        NavigationLink {
-                            ArcView(document: document)
-                        } label: {
+                        NavigationLink(value: AppRoute.arc) {
                             Label("Arc View", systemImage: "folder.fill")
                         }
                         
@@ -81,6 +84,29 @@ struct TimelineDocumentView: View {
                     }
                 }
             }
+            .navigationDestination(for: AppRoute.self) { route in
+                switch route {
+                case .character:
+                    CharacterView(document: document)
+                case .arc:
+                    ArcView(document: document)
+                }
+            }
+            // 4. Attach keyboard shortcut directly to path append action
+            .background(
+                Button("") {
+                    navigationPath.append(AppRoute.character)
+                }
+                .keyboardShortcut("1", modifiers: .command)
+                .opacity(0) // Use opacity(0) instead of .hidden() to preserve shortcut routing
+            )
+            .background(
+                Button("") {
+                    navigationPath.append(AppRoute.arc)
+                }
+                .keyboardShortcut("2", modifiers: .command)
+                .opacity(0) // Use opacity(0) instead of .hidden() to preserve shortcut routing
+            )
             .task(id: document) {
                 checkInitialSetup()
             }
