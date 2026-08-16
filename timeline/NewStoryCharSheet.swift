@@ -19,6 +19,7 @@ struct NewStoryCharSheet: View {
     
     // Local state for the form inputs
     @State private var storyc = StoryChar(id: UUID())
+    @State private var isExpanded = false
     
     // Helper to check if we are editing vs creating
     private var isEditing: Bool {
@@ -57,6 +58,74 @@ struct NewStoryCharSheet: View {
             
             TextField("Character Background", text: $storyc.background, axis: .vertical)
                 .textFieldStyle(.roundedBorder)
+            
+            // Color
+            VStack(spacing: 6) {
+                // 1. Dropdown Header Button
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isExpanded.toggle()
+                    }
+                }) {
+                    HStack {
+                        Text(storyc.myColor.isEmpty ? "Select Color" : storyc.myColor)
+                            .font(.body)
+                            // .fontWeight(.semibold)
+                            .foregroundColor(document.whatColor(name: storyc.myColor).0)
+                        
+                        Spacer()
+                        
+                        Image(systemName: "chevron.up")
+                            .font(.body)
+                            .rotationEffect(.degrees(isExpanded ? 0 : 180))
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 6)
+                    .background(document.whatColor(name: storyc.myColor).1)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.black, lineWidth: 1)
+                    )
+                }
+                .buttonStyle(.plain)
+
+                // 2. Expandable Items List
+                if isExpanded {
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: 0) {
+                            ForEach(document.colorPalette, id: \.self) { col in
+                                Button(action: {
+                                    storyc.myColor = col
+                                    withAnimation {
+                                        isExpanded = false
+                                    }
+                                }) {
+                                    HStack {
+                                        Text(col)
+                                            .font(.body)
+                                            .foregroundColor(document.whatColor(name: col).0)
+                                            //.fontWeight(.semibold)
+                                        Spacer()
+                                    }
+                                    .padding(.vertical, 6)
+                                    .padding(.horizontal, 16)
+                                    .background(document.whatColor(name: col).1)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+
+                    }
+                    .frame(maxHeight: 180)
+                    .background(Color.white)
+                    .cornerRadius(8)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.black, lineWidth: 1)
+                    )
+                    .shadow(color: Color.black.opacity(0.15), radius: 6, x: 2, y: 4)
+                }
+            }
             
             HStack {
                 Button("Cancel", role: .cancel) {

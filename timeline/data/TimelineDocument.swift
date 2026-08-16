@@ -14,12 +14,12 @@ class TimelineDocument {
     var title: String
     @Relationship(deleteRule: .cascade) var config: TimelineConfig
     @Relationship(deleteRule: .cascade) var arcs: [Arc] = []
+    var visibleArcs: [Arc] = []
     @Relationship(deleteRule: .cascade) var events: [Event] = []
     @Relationship(deleteRule: .cascade) var years: [FantasyYear] = []
     @Relationship(deleteRule: .cascade) var characters: [StoryChar] = []
     
     var colorPalette: [String] = ["Default", "Red", "Orange", "Yellow", "Green", "Mint", "Blue", "Indigo", "Purple", "Pink"]
-    
     var colorDictionary: [String: Int] = [:]
     
     init(title: String = "Untitled", config: TimelineConfig) {

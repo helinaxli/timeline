@@ -92,6 +92,22 @@ struct ArcCardView: View {
                 
                 Spacer()
                 
+                Button {
+                    // 1. Action logic (state changes go here)
+                    node.visible.toggle()
+                    
+                    if node.visible {
+                        document.visibleArcs.append(node)
+                    } else {
+                        document.visibleArcs.removeAll { $0.id == node.id }
+                    }
+                } label: {
+                    // 2. View layout (only views go here)
+                    Image(systemName: node.visible ? "eye" : "eye.slash.fill")
+                        .font(.caption)
+                }
+                .accessibilityLabel("Toggle Arc Visibility")
+                
                 Button(action: { onEdit?() }) {
                     Image(systemName: "pencil")
                         .font(.caption)

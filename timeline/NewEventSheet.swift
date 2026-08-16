@@ -100,7 +100,7 @@ struct NewEventSheet: View {
                                 VStack(alignment: .leading, spacing: 1) {
                                     Text(storyc.name)
                                         .font(.subheadline)
-                                        .fontWeight(.semibold)
+                                        // .fontWeight(.semibold)
                                 }
                                 
                                 Button(action: {
@@ -109,11 +109,14 @@ struct NewEventSheet: View {
                                     Image(systemName: "xmark.circle.fill")
                                         .font(.caption)
                                 }
+                                .buttonStyle(.plain)
                             }
                             .padding(.horizontal, 10)
                             .padding(.vertical, 6)
-                            .background(Color.blue.opacity(0.15))
-                            .foregroundColor(.blue)
+//                            .background(Color.blue.opacity(0.15))
+//                            .foregroundColor(.blue)
+                            .foregroundColor(document.whatColor(name: storyc.myColor).0)
+                            .background(document.whatColor(name: storyc.myColor).1)
                             .clipShape(Capsule())
                         }
                     }
@@ -139,13 +142,15 @@ struct NewEventSheet: View {
                                         VStack(alignment: .leading, spacing: 2) {
                                             Text(storyc.name)
                                                 .font(.body)
-                                                .foregroundColor(.blue)
+                                                .foregroundColor(document.whatColor(name: storyc.myColor).0)
                                         }
                                         Spacer()
                                     }
                                     .padding(.vertical, 8)
                                     .padding(.horizontal, 12)
+                                    //.contentShape(Rectangle())
                                     // .background(Color.blue.opacity(0.15))
+                                    .background(document.whatColor(name: storyc.myColor).1)
                                 }
                                 .buttonStyle(.plain)
                             }
@@ -154,7 +159,7 @@ struct NewEventSheet: View {
                     .frame(maxHeight: 200) // Limits dropdown height
                 }
                 // .background(.secondary)
-                .background(Color.blue.opacity(0.15))
+                //.background(Color.blue.opacity(0.15))
                 .cornerRadius(8)
                 .shadow(color: Color.black.opacity(0.15), radius: 5, x: 0, y: 3)
             }
@@ -167,7 +172,7 @@ struct NewEventSheet: View {
                                 VStack(alignment: .leading, spacing: 1) {
                                     Text(arc.title)
                                         .font(.subheadline)
-                                        .fontWeight(.semibold)
+                                        // .fontWeight(.semibold)
                                 }
                                 
                                 Button(action: {
@@ -176,11 +181,14 @@ struct NewEventSheet: View {
                                     Image(systemName: "xmark.circle.fill")
                                         .font(.caption)
                                 }
+                                .buttonStyle(.plain)
                             }
                             .padding(.horizontal, 10)
                             .padding(.vertical, 6)
-                            .background(Color.blue.opacity(0.15))
-                            .foregroundColor(.blue)
+                            // .background(Color.blue.opacity(0.15))
+                            // .foregroundColor(.blue)
+                            .foregroundColor(document.whatColor(name: arc.myColor).0)
+                            .background(document.whatColor(name: arc.myColor).1)
                             .clipShape(Capsule())
                         }
                     }
@@ -206,14 +214,14 @@ struct NewEventSheet: View {
                                         VStack(alignment: .leading, spacing: 2) {
                                             Text(arc.title)
                                                 .font(.body)
-                                                .foregroundColor(.blue)
+                                                .foregroundColor(document.whatColor(name: arc.myColor).0)
                                         }
                                         Spacer()
                                     }
                                     .padding(.vertical, 8)
                                     .padding(.horizontal, 12)
-                                    .contentShape(Rectangle())
-                                    // .background(.ultraThinMaterial)
+                                    // .contentShape(Rectangle())
+                                    .background(document.whatColor(name: arc.myColor).1)
                                 }
                                 .buttonStyle(.plain)
                             }
@@ -222,7 +230,7 @@ struct NewEventSheet: View {
                     .frame(maxHeight: 200) // Limits dropdown height
                 }
                 // .background(.secondary)
-                .background(Color.blue.opacity(0.15))
+                //.background(Color.blue.opacity(0.15))
                 .cornerRadius(8)
                 .shadow(color: Color.black.opacity(0.15), radius: 5, x: 0, y: 3)
             }

@@ -144,7 +144,8 @@ struct CharCardView: View {
         .frame(width: 1000) // Fixed width, flexible height
         // .frame(minHeight: 100) // Ensures consistent minimum height
         // .background(.secondary.opacity(0.2))
-        .background(Color(.windowBackgroundColor))
+        // .background(Color(.windowBackgroundColor))
+        .background(document.whatColor(name: node.myColor).1)
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
