@@ -139,7 +139,7 @@ struct ArcCardView: View {
         }
         .padding(16)
         .frame(width: 1000, alignment: .leading) // Forces content to left edge & expands width dynamically
-        .background(whatColor(name: node.myColor).1)
+        .background(document.whatColor(name: node.myColor).1)
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)

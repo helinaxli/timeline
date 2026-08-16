@@ -44,7 +44,7 @@ struct NewArcSheet: View {
                         Text(arc.myColor.isEmpty ? "Select Color" : arc.myColor)
                             .font(.body)
                             // .fontWeight(.semibold)
-                            .foregroundColor(whatColor(name: arc.myColor).0)
+                            .foregroundColor(document.whatColor(name: arc.myColor).0)
                         
                         Spacer()
                         
@@ -54,7 +54,7 @@ struct NewArcSheet: View {
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 6)
-                    .background(whatColor(name: arc.myColor).1)
+                    .background(document.whatColor(name: arc.myColor).1)
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
                             .stroke(Color.black, lineWidth: 1)
@@ -76,18 +76,18 @@ struct NewArcSheet: View {
                                     HStack {
                                         Text(col)
                                             .font(.body)
-                                            .foregroundColor(whatColor(name: col).0)
+                                            .foregroundColor(document.whatColor(name: col).0)
                                             //.fontWeight(.semibold)
                                         Spacer()
                                     }
                                     .padding(.vertical, 6)
                                     .padding(.horizontal, 16)
-                                    .background(whatColor(name: col).1)
+                                    .background(document.whatColor(name: col).1)
                                 }
                                 .buttonStyle(.plain)
                             }
                         }
-                        .id(document.colorPalette)
+
                     }
                     .frame(maxHeight: 180)
                     .background(Color.white)
@@ -131,29 +131,5 @@ struct NewArcSheet: View {
         } else {
             document.arcs.append(arc)
         }
-    }
-}
-
-public func whatColor(name: String) -> (Color, Color) {
-    if name == "Red" {
-        return (.black, .red.opacity(0.15))
-    } else if name == "Orange" {
-        return (.black, .orange.opacity(0.15))
-    } else if name == "Yellow" {
-        return (.black, .yellow.opacity(0.15))
-    } else if name == "Green" {
-        return (.black, .green.opacity(0.15))
-    } else if name == "Mint" {
-        return (.black, .mint.opacity(0.15))
-    } else if name == "Blue" {
-        return (.black, .blue.opacity(0.15))
-    } else if name == "Purple" {
-        return (.black, .purple.opacity(0.15))
-    } else if name == "Indigo" {
-        return (.black, .indigo.opacity(0.15))
-    } else if name == "Pink" {
-        return (.black, .pink.opacity(0.15))
-    } else {
-        return (.black, .white)
     }
 }

@@ -18,6 +18,10 @@ class TimelineDocument {
     @Relationship(deleteRule: .cascade) var years: [FantasyYear] = []
     @Relationship(deleteRule: .cascade) var characters: [StoryChar] = []
     
+    var colorPalette: [String] = ["Default", "Red", "Orange", "Yellow", "Green", "Mint", "Blue", "Indigo", "Purple", "Pink"]
+    
+    var colorDictionary: [String: Int] = [:]
+    
     init(title: String = "Untitled", config: TimelineConfig) {
         self.title = title
         self.config = config
@@ -86,18 +90,29 @@ class TimelineDocument {
             }
         }
     }
+    
+    func whatColor(name: String) -> (Color, Color) {
+        if name == "Red" {
+            return (.black, .red.opacity(0.15))
+        } else if name == "Orange" {
+            return (.black, .orange.opacity(0.15))
+        } else if name == "Yellow" {
+            return (.black, .yellow.opacity(0.15))
+        } else if name == "Green" {
+            return (.black, .green.opacity(0.15))
+        } else if name == "Mint" {
+            return (.black, .mint.opacity(0.15))
+        } else if name == "Blue" {
+            return (.black, .blue.opacity(0.15))
+        } else if name == "Purple" {
+            return (.black, .purple.opacity(0.15))
+        } else if name == "Indigo" {
+            return (.black, .indigo.opacity(0.15))
+        } else if name == "Pink" {
+            return (.black, .pink.opacity(0.15))
+        } else {
+            return (.black, .white)
+        }
+    }
+
 }
-
-public var colorPalette: [String] = ["Default", "Red", "Orange", "Yellow", "Green", "Mint", "Blue", "Indigo", "Purple", "Pink"]
-
-public var colorDictionary: [String: (Color, Color)] = [
-    "Default": (.black, .white),
-    "Red": (.black, .red.opacity(0.15)),
-    "Orange": (.black, .orange.opacity(0.15)),
-    "Yellow": (.black, .yellow.opacity(0.15)),
-    "Green": (.black, .green.opacity(0.15)),
-    "Blue": (.black, .blue.opacity(0.15)),
-    "Indigo": (.black, .indigo.opacity(0.15)),
-    "Purple": (.black, .purple.opacity(0.15)),
-    "Pink": (.black, .pink.opacity(0.15))
-]
