@@ -288,6 +288,8 @@ struct NodeCardView: View {
     var onEdit: (() -> Void)? = nil
     var onDelete: (() -> Void)? = nil
     
+    @State private var isShowingDeleteAlert = false
+    
     @State private var isShowingEventCard = false
     @Environment(\.undoManager) private var undoManager
 
@@ -361,8 +363,17 @@ struct NodeCardView: View {
                 onEdit?()
             }
             Button("Delete", role: .destructive) {
+//                onDelete?()
+                isShowingDeleteAlert = true
+            }
+        }
+        .alert("Delete Arc?", isPresented: $isShowingDeleteAlert) {
+            Button("Delete", role: .destructive) {
                 onDelete?()
             }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("Are you sure you want to delete \"\(node.title)\"?")
         }
         .sheet(isPresented: $isShowingEventCard) {
             EventCard(

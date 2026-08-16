@@ -122,6 +122,8 @@ struct ArcCardView: View {
     var onEdit: (() -> Void)? = nil
     var onDelete: (() -> Void)? = nil
     
+    @State private var isShowingDeleteAlert = false
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 12) {
@@ -173,13 +175,22 @@ struct ArcCardView: View {
                 }
                 .accessibilityLabel("Edit")
                 
-                Button(role: .destructive, action: { onDelete?() }) {
+                Button(role: .destructive, action: { isShowingDeleteAlert = true }) {
                     Image(systemName: "trash")
                         .font(.caption)
                 }
                 .accessibilityLabel("Delete")
             }
             .buttonStyle(.borderless)
+            
+            .alert("Delete Arc?", isPresented: $isShowingDeleteAlert) {
+                Button("Delete", role: .destructive) {
+                    onDelete?()
+                }
+                Button("Cancel", role: .cancel) { }
+            } message: {
+                Text("Are you sure you want to delete \(node.title)? This action cannot be undone.")
+            }
         
             Text(node.summary)
                 .font(.body)

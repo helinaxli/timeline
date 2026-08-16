@@ -127,6 +127,8 @@ struct CharCardView: View {
 
     var onEdit: (() -> Void)? = nil
     var onDelete: (() -> Void)? = nil
+    
+    @State private var isShowingDeleteAlert = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -186,13 +188,22 @@ struct CharCardView: View {
                     }
                     .accessibilityLabel("Edit")
                     
-                    Button(role: .destructive, action: { onDelete?() }) {
+                    Button(role: .destructive, action: { isShowingDeleteAlert = true }) {
                         Image(systemName: "trash")
                             .font(.caption)
                     }
                     .accessibilityLabel("Delete")
                 }
                 .buttonStyle(.borderless)
+            }
+            
+            .alert("Delete Character?", isPresented: $isShowingDeleteAlert) {
+                Button("Delete", role: .destructive) {
+                    onDelete?()
+                }
+                Button("Cancel", role: .cancel) { }
+            } message: {
+                Text("Are you sure you want to delete \(node.name)? This action cannot be undone.")
             }
             
             // Content: Background description

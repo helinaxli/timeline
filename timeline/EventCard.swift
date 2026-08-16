@@ -14,6 +14,8 @@ struct EventCard: View {
     var onEdit: (() -> Void)? = nil
     var onDelete: (() -> Void)? = nil
     
+    @State private var isShowingDeleteAlert = false
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 12) {
@@ -29,7 +31,7 @@ struct EventCard: View {
                 }
                 .accessibilityLabel("Edit")
                 
-                Button(role: .destructive, action: { onDelete?() }) {
+                Button(role: .destructive, action: { isShowingDeleteAlert = true }) {
                     Image(systemName: "trash")
                         .font(.caption)
                 }
@@ -44,6 +46,15 @@ struct EventCard: View {
                 .accessibilityLabel("Close")
             }
             .buttonStyle(.borderless)
+            
+            .alert("Delete Event?", isPresented: $isShowingDeleteAlert) {
+                Button("Delete", role: .destructive) {
+                    onDelete?()
+                }
+                Button("Cancel", role: .cancel) { }
+            } message: {
+                Text("Are you sure you want to delete \"\(node.title)\"?")
+            }
             
             Text(formattedDate)
                 .font(.body)
