@@ -14,7 +14,10 @@ class TimelineDocument {
     var title: String
     @Relationship(deleteRule: .cascade) var config: TimelineConfig
     @Relationship(deleteRule: .cascade) var arcs: [Arc] = []
+    var showAllArcs = false
     var visibleArcs: [Arc] = []
+    
+    var showAllChars = false
     var visibleChars: [StoryChar] = []
     @Relationship(deleteRule: .cascade) var events: [Event] = []
     @Relationship(deleteRule: .cascade) var years: [FantasyYear] = []

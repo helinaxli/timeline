@@ -13,6 +13,7 @@ struct ArcView: View {
     @State private var isShowingNewEventSheet = false
     @State private var isShowingNewStoryCharSheet = false
     @State private var isShowingNewArcSheet = false
+    @State private var showAllArcs = false
     
     @State private var editingArc: Arc? = nil
     
@@ -32,15 +33,36 @@ struct ArcView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Menu("Add New", systemImage: "plus") {
-                        Button("New Character", systemImage: "person.badge.plus.fill") {
-                            isShowingNewStoryCharSheet = true
+                    HStack {
+                        Button {
+                            document.showAllArcs.toggle()
+                            
+                            if document.showAllArcs {
+                                document.visibleArcs = document.arcs
+                                for arc in document.arcs {
+                                    arc.visible = true
+                                }
+                            } else {
+                                document.visibleArcs = []
+                                for arc in document.arcs {
+                                    arc.visible = false
+                                }
+                            }
+                        } label: {
+                            // 2. View layout (only views go here)
+                            Image(systemName: document.showAllArcs ? "eye" : "eye.slash.fill")
                         }
-                        Button("New Event", systemImage: "calendar.badge.plus") {
-                            isShowingNewEventSheet = true
-                        }
-                        Button("New Arc", systemImage: "folder.fill.badge.plus") {
-                            isShowingNewArcSheet = true
+                        
+                        Menu("Add New", systemImage: "plus") {
+                            Button("New Character", systemImage: "person.badge.plus.fill") {
+                                isShowingNewStoryCharSheet = true
+                            }
+                            Button("New Event", systemImage: "calendar.badge.plus") {
+                                isShowingNewEventSheet = true
+                            }
+                            Button("New Arc", systemImage: "folder.fill.badge.plus") {
+                                isShowingNewArcSheet = true
+                            }
                         }
                     }
                 }
@@ -120,6 +142,8 @@ struct ArcCardView: View {
                     } else {
                         document.visibleArcs.removeAll { $0.id == node.id }
                     }
+                    
+                    document.showAllArcs = document.visibleArcs == document.arcs
                 } label: {
                     // 2. View layout (only views go here)
                     Image(systemName: node.visible ? "eye" : "eye.slash.fill")

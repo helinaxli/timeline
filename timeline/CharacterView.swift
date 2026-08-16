@@ -41,15 +41,36 @@ struct CharacterView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Menu("Add New", systemImage: "plus") {
-                        Button("New Character", systemImage: "person.badge.plus.fill") {
-                            isShowingNewStoryCharSheet = true
+                    HStack {
+                        Button {
+                            document.showAllChars.toggle()
+                            
+                            if document.showAllChars {
+                                document.visibleChars = document.characters
+                                for storyc in document.characters {
+                                    storyc.visible = true
+                                }
+                            } else {
+                                document.visibleChars = []
+                                for storyc in document.characters {
+                                    storyc.visible = false
+                                }
+                            }
+                        } label: {
+                            // 2. View layout (only views go here)
+                            Image(systemName: document.showAllChars ? "eye" : "eye.slash.fill")
                         }
-                        Button("New Event", systemImage: "calendar.badge.plus") {
-                            isShowingNewEventSheet = true
-                        }
-                        Button("New Arc", systemImage: "folder.fill.badge.plus") {
-                            isShowingNewArcSheet = true
+                        
+                        Menu("Add New", systemImage: "plus") {
+                            Button("New Character", systemImage: "person.badge.plus.fill") {
+                                isShowingNewStoryCharSheet = true
+                            }
+                            Button("New Event", systemImage: "calendar.badge.plus") {
+                                isShowingNewEventSheet = true
+                            }
+                            Button("New Arc", systemImage: "folder.fill.badge.plus") {
+                                isShowingNewArcSheet = true
+                            }
                         }
                     }
                 }
@@ -86,7 +107,7 @@ struct CharacterView: View {
 }
 
 struct CharCardView: View {
-    let node: StoryChar
+    @Bindable var node: StoryChar
     let document: TimelineDocument
 
     var onEdit: (() -> Void)? = nil
@@ -133,6 +154,8 @@ struct CharCardView: View {
                     } else {
                         document.visibleChars.removeAll { $0.id == node.id }
                     }
+                    
+                    document.showAllChars = document.visibleChars == document.characters
                 } label: {
                     // 2. View layout (only views go here)
                     Image(systemName: node.visible ? "eye" : "eye.slash.fill")
