@@ -17,7 +17,6 @@ struct CharacterView: View {
     @State private var isShowingNewStoryCharSheet = false
     @State private var isShowingNewArcSheet = false
     
-    // Track the specific character being edited
     @State private var editingCharacter: StoryChar? = nil
     
     var body: some View {

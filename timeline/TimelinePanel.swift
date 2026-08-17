@@ -14,9 +14,7 @@ struct TimelinePanel: View {
     @Environment(\.undoManager) private var undoManager
     
     let topInset: CGFloat = 20
-    // @State private var pointsPerYear: CGFloat = 80.0
-         
-    // Axis layout properties
+
     private let axisX: CGFloat = 500
     private let tickLength: CGFloat = 10
     var startYear: Int { document.config.startYear }
@@ -24,7 +22,6 @@ struct TimelinePanel: View {
     var totalYears: Int { endYear - startYear + 1 }
     private var totalHeight: CGFloat { CGFloat(totalYears) * document.pointsPerYear }
     
-    @State private var isShowingEventEditSheet = false
     @State private var editingEvent: Event? = nil
     
     var body: some View {
@@ -113,7 +110,7 @@ struct TimelinePanel: View {
                 } else {
                     text = Text("\(currentYear)")
                         .font(.caption)
-                        .bold() // Correct method name for bold text
+                        .bold()
                 }
                  
                 context.draw(text, at: CGPoint(x: axisX - tickLength - 10, y: yPos), anchor: .trailing)
@@ -212,7 +209,6 @@ struct TimelinePanel: View {
         return fallbackColor
     }
     
-    /// Computes whether an event appears once (returns parent color) or multiple times (returns "Default")
     private func computeEventColors() -> [Event.ID: String] {
         var counts: [Event.ID: Int] = [:]
         var colorMap: [Event.ID: String] = [:]
@@ -274,7 +270,6 @@ struct TimelinePanel: View {
                     myColor: myColor,
                     onEdit: {
                         editingEvent = nodeReadOnly
-                        isShowingEventEditSheet = true
                     },
                     onDelete: {
                         deleteEvent(nodeReadOnly)
@@ -295,7 +290,6 @@ struct TimelinePanel: View {
                     myColor: myColor,
                     onEdit: {
                         editingEvent = nodeReadOnly
-                        isShowingEventEditSheet = true
                     },
                     onDelete: {
                         deleteEvent(nodeReadOnly)
@@ -404,13 +398,11 @@ struct NodeCardView: View {
         }
         .padding(16)
         .frame(width: node.size.width, height: node.size.height, alignment: .topLeading)
-        // .background(Color(.windowBackgroundColor))
         .background(document.whatColor(name: myColor).1)
         .contentShape(Rectangle())
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                // .strokeBorder(Color.accentColor, lineWidth: 2)
                 .strokeBorder(Color.black, lineWidth: 2)
         )
         .gesture(
@@ -456,7 +448,6 @@ struct NodeCardView: View {
                 onEdit?()
             }
             Button("Delete", role: .destructive) {
-//                onDelete?()
                 isShowingDeleteAlert = true
             }
         }

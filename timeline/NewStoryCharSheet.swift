@@ -11,17 +11,13 @@ struct NewStoryCharSheet: View {
     @Bindable var document: TimelineDocument
     @Binding var isPresented: Bool
     
-    // Optional character passed in for editing mode
     var characterToEdit: StoryChar? = nil
     
-    // Environment property to dismiss the sheet cleanly
     @Environment(\.dismiss) private var dismiss
     
-    // Local state for the form inputs
     @State private var storyc = StoryChar(id: UUID())
     @State private var isExpanded = false
     
-    // Helper to check if we are editing vs creating
     private var isEditing: Bool {
         characterToEdit != nil
     }
@@ -145,7 +141,6 @@ struct NewStoryCharSheet: View {
         .padding(20)
         .frame(minWidth: 350, minHeight: 250)
         .onAppear {
-            // Populate form fields if editing an existing character
             if let characterToEdit {
                 storyc = characterToEdit
             }
