@@ -13,10 +13,8 @@ struct TimelineDocumentContainerView: View {
     @Query private var documents: [TimelineDocument]
     var body: some View {
         if let document = documents.first {
-            // Pass the guaranteed non-optional model down
             TimelineDocumentView(document: document)
         } else {
-            // Displays briefly while SwiftData boots up the document context
             ProgressView("Loading document...")
         }
     }
@@ -92,7 +90,6 @@ struct TimelineDocumentView: View {
                     ArcView(document: document)
                 }
             }
-            // 4. Attach keyboard shortcut directly to path append action
             .background(
                 Button("") {
                     navigationPath.append(AppRoute.character)
@@ -110,7 +107,6 @@ struct TimelineDocumentView: View {
             .task(id: document) {
                 checkInitialSetup()
             }
-            // Present setup sheet if unconfigured
             .sheet(isPresented: $showSetupSheet) {
                 TimelineSetupSheet(document: document, isPresented: $showSetupSheet)
                     .interactiveDismissDisabled()
@@ -128,14 +124,12 @@ struct TimelineDocumentView: View {
     }
 
     private func checkInitialSetup() {
-        // If the document's config hasn't been set up yet, show the sheet
         if !document.config.isConfigured {
             showSetupSheet = true
         }
     }
 }
 
-// Separate view file or inline struct for the pop-up
 struct TimelineSetupSheet: View {
     @Bindable var document: TimelineDocument
     @Binding var isPresented: Bool

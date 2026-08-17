@@ -472,10 +472,7 @@ struct NodeCardView: View {
             EventCard(
                 node: $node,
                 onEdit: {
-                    // 1. Dismiss the EventCard detail sheet
-                    isShowingEventCard = false
-                    
-                    // 2. Bubble up the edit action to TimelinePanel
+                    isShowingEventCard = false                    
                     onEdit?()
                 },
                 onDelete: {

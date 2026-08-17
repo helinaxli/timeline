@@ -253,6 +253,7 @@ struct NewEventSheet: View {
                     dismiss()
                 }
                 .buttonStyle(.borderedProminent)
+                .keyboardShortcut(.defaultAction)
                 .disabled(isYearInvalid)
             }
         }

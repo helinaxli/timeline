@@ -34,7 +34,6 @@ struct NewArcSheet: View {
             
             // Color
             VStack(spacing: 6) {
-                // 1. Dropdown Header Button
                 Button(action: {
                     withAnimation(.easeInOut(duration: 0.2)) {
                         isExpanded.toggle()
@@ -62,7 +61,6 @@ struct NewArcSheet: View {
                 }
                 .buttonStyle(.plain)
 
-                // 2. Expandable Items List
                 if isExpanded {
                     ScrollView {
                         LazyVStack(alignment: .leading, spacing: 0) {
@@ -112,6 +110,7 @@ struct NewArcSheet: View {
                     dismiss()
                 }
                 .buttonStyle(.borderedProminent)
+                .keyboardShortcut(.defaultAction)
             }
         }
         .padding(20)
