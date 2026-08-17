@@ -23,6 +23,8 @@ class TimelineDocument {
     @Relationship(deleteRule: .cascade) var years: [FantasyYear] = []
     @Relationship(deleteRule: .cascade) var characters: [StoryChar] = []
     
+    var pointsPerYear: CGFloat = 80.0
+    
     var colorPalette: [String] = ["Default", "Red", "Orange", "Yellow", "Green", "Mint", "Blue", "Indigo", "Purple", "Pink"]
     var colorDictionary: [String: Int] = [:]
     

@@ -14,7 +14,7 @@ struct TimelinePanel: View {
     @Environment(\.undoManager) private var undoManager
     
     let topInset: CGFloat = 20
-    @State private var pointsPerYear: CGFloat = 80.0
+    // @State private var pointsPerYear: CGFloat = 80.0
          
     // Axis layout properties
     private let axisX: CGFloat = 500
@@ -22,16 +22,41 @@ struct TimelinePanel: View {
     var startYear: Int { document.config.startYear }
     var endYear: Int { document.config.endYear }
     var totalYears: Int { endYear - startYear + 1 }
-    private var totalHeight: CGFloat { CGFloat(totalYears) * pointsPerYear }
+    private var totalHeight: CGFloat { CGFloat(totalYears) * document.pointsPerYear }
     
     @State private var isShowingEventEditSheet = false
     @State private var editingEvent: Event? = nil
     
     var body: some View {
-        VStack {
-            Text(document.title)
-                .font(.title)
-                .padding(.top, 24)
+        VStack(spacing: 16) {
+            ZStack {
+                Text(document.title)
+                    .font(.title)
+
+                HStack {
+                    Spacer()
+                    
+                    HStack(spacing: 8) {
+                        Button {
+                            document.pointsPerYear *= 0.5
+                        } label: {
+                            Image(systemName: "minus.circle")
+                        }
+
+                        Button {
+                            document.pointsPerYear *= 2
+                        } label: {
+                            Image(systemName: "plus.circle")
+                        }
+                        
+                        Button("Reset") {
+                            document.pointsPerYear = 80.0
+                        }
+                    }
+                }
+            }
+            .padding(.top, 16)
+            .padding(.horizontal, 16)
             
             ScrollView([.vertical, .horizontal]) {
                 ZStack(alignment: .topLeading) {
@@ -68,7 +93,7 @@ struct TimelinePanel: View {
             // Draw Year Tickmarks
             for yearOffset in 0...totalYears {
                 let currentYear = startYear + yearOffset
-                let yPos = topInset + (CGFloat(yearOffset) * pointsPerYear)
+                let yPos = topInset + (CGFloat(yearOffset) * document.pointsPerYear)
                  
                 // Tick line
                 var tickPath = Path()
@@ -242,22 +267,22 @@ struct TimelinePanel: View {
         let yearIndex = event.year - startYear
          
         guard document.years.indices.contains(yearIndex) else {
-            return CGFloat(yearIndex) * pointsPerYear
+            return CGFloat(yearIndex) * document.pointsPerYear
         }
          
         let matchingYear = document.years[yearIndex]
         guard !matchingYear.months.isEmpty, matchingYear.numMonths > 0 else {
-            return CGFloat(yearIndex) * pointsPerYear
+            return CGFloat(yearIndex) * document.pointsPerYear
         }
          
-        var yPos = CGFloat(yearIndex) * pointsPerYear
+        var yPos = CGFloat(yearIndex) * document.pointsPerYear
         let totalMonthsInYear = CGFloat(matchingYear.numMonths)
          
         if let monthNum = event.month {
             let monthIndex = monthNum - 1
             let elapsedMonths = CGFloat(max(0, monthIndex))
             let monthFraction = elapsedMonths / totalMonthsInYear
-            yPos += monthFraction * pointsPerYear
+            yPos += monthFraction * document.pointsPerYear
              
             if let dayNum = event.day {
                 var daysInMonth: CGFloat = 30
@@ -269,7 +294,7 @@ struct TimelinePanel: View {
                 if daysInMonth > 0 {
                     let dayProgressWithinMonth = CGFloat(max(0, dayNum - 1)) / daysInMonth
                     let dayFractionInYear = dayProgressWithinMonth / totalMonthsInYear
-                    yPos += dayFractionInYear * pointsPerYear
+                    yPos += dayFractionInYear * document.pointsPerYear
                 }
             }
         }
