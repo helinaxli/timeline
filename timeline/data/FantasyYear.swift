@@ -11,8 +11,8 @@ import SwiftData
 class FantasyYear {
     var myself: Int
     var numMonths: Int
-    @Relationship var months: [FantasyMonth] = []
-    @Relationship var events: [Event] = []
+    @Relationship(deleteRule: .cascade) var months: [FantasyMonth] = []
+    var events: [Event] = []
     
     init(myself: Int, numMonths: Int = 12) {
         self.myself = myself

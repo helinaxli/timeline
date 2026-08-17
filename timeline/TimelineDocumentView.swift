@@ -9,13 +9,21 @@ import SwiftUI
 import SwiftData
 
 struct TimelineDocumentContainerView: View {
-    
+    @Environment(\.modelContext) private var modelContext
     @Query private var documents: [TimelineDocument]
+    
     var body: some View {
-        if let document = documents.first {
-            TimelineDocumentView(document: document)
-        } else {
-            ProgressView("Loading document...")
+        Group {
+            if let document = documents.first {
+                TimelineDocumentView(document: document)
+            } else {
+                ProgressView("Loading document...")
+            }
+        }
+        .onDisappear {
+            if modelContext.hasChanges {
+                modelContext.rollback()
+            }
         }
     }
 }

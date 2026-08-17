@@ -23,6 +23,7 @@ struct TimelinePanel: View {
     private var totalHeight: CGFloat { CGFloat(totalYears) * document.pointsPerYear }
     
     @State private var editingEvent: Event? = nil
+    @State private var editingConfig: TimelineConfig? = nil
     
     var body: some View {
         VStack(spacing: 16) {
@@ -48,6 +49,12 @@ struct TimelinePanel: View {
                         
                         Button("Reset") {
                             document.pointsPerYear = 80.0
+                        }
+                        
+                        Button {
+                            editingConfig = document.config
+                        } label: {
+                            Image(systemName: "gear")
                         }
                     }
                 }
@@ -75,6 +82,16 @@ struct TimelinePanel: View {
                     ),
                     eventToEdit: curr_event
                 )
+            }
+            .sheet(item: $editingConfig) { curr_config in
+                TimelineSetupSheet(document: document,
+                                   isPresented: Binding(
+                                    get: { editingConfig != nil },
+                                    set: { isPresenting in
+                                        if !isPresenting { editingConfig = nil }
+                                    }
+                                   ),
+                                   configToEdit: curr_config)
             }
         }
     }

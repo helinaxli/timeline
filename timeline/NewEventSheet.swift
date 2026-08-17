@@ -260,14 +260,13 @@ struct NewEventSheet: View {
         .padding(20)
         .frame(minWidth: 350, minHeight: 250)
         .onAppear {
-            // Populate form fields if editing an existing character
             if let eventToEdit {
                 event = eventToEdit
                 selectedChars = eventToEdit.characters
                 selectedArcs = eventToEdit.arcs
             }
         }
-    } // <-- Closing brace for `var body: some View` added here
+    }
 
     // Private functions are now in non-local struct scope
     private func selectCharacter(_ character: StoryChar) {

@@ -12,7 +12,7 @@ import SwiftUI
 @Model
 class TimelineDocument {
     var title: String
-    @Relationship(deleteRule: .cascade) var config: TimelineConfig
+    var config: TimelineConfig
     @Relationship(deleteRule: .cascade) var arcs: [Arc] = []
     var showAllArcs = false
     var visibleArcs: [Arc] = []
@@ -33,26 +33,26 @@ class TimelineDocument {
         self.config = config
     }
     
-    func configureTimeline() {
-        // Prevent duplicate generation
-        guard years.isEmpty else { return }
-        
-        let start = config.startYear
-        let end = config.endYear
-        let numMonths = config.numMonthsPerYear
-        let numDays = config.numDaysPerMonth
-        
-        for y in start...end {
-            let yearModel = FantasyYear(myself: y, numMonths: numMonths)
-            for m in 1...numMonths {
-                let monthModel = FantasyMonth(myself: m, year: y, numDays: numDays)
-                yearModel.months.append(monthModel)
-            }
-            self.years.append(yearModel)
-        }
-        
-        config.isConfigured = true
-    }
+//    func configureTimeline() {
+//        // Prevent duplicate generation
+//        guard years.isEmpty else { return }
+//        
+//        let start = config.startYear
+//        let end = config.endYear
+//        let numMonths = config.numMonthsPerYear
+//        let numDays = config.numDaysPerMonth
+//        
+//        for y in start...end {
+//            let yearModel = FantasyYear(myself: y, numMonths: numMonths)
+//            for m in 1...numMonths {
+//                let monthModel = FantasyMonth(myself: m, year: y, numDays: numDays)
+//                yearModel.months.append(monthModel)
+//            }
+//            self.years.append(yearModel)
+//        }
+//        
+//        config.isConfigured = true
+//    }
     
     func addEvent(event: Event) {
         // 1. Append to document master list
