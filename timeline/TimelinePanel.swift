@@ -102,11 +102,79 @@ struct TimelinePanel: View {
                 context.stroke(tickPath, with: .color(.primary), lineWidth: 1.5)
                  
                 // Year Label
-                let text = Text("\(currentYear)")
-                    .font(.caption)
-                    .bold()
+                let text: Text
+
+                if document.pointsPerYear >= 320.0 {
+                    text = Text("\(currentYear)")
+                        .font(.body)
+                } else if document.pointsPerYear >= 5120.0 {
+                    text = Text("\(currentYear)")
+                        .font(.headline)
+                } else {
+                    text = Text("\(currentYear)")
+                        .font(.caption)
+                        .bold() // Correct method name for bold text
+                }
                  
                 context.draw(text, at: CGPoint(x: axisX - tickLength - 10, y: yPos), anchor: .trailing)
+            }
+            
+            if document.pointsPerYear >= 320.0 {
+                for (yearIndex, yr) in document.years.enumerated() {
+                    let yearTopPos = topInset + (CGFloat(yearIndex) * document.pointsPerYear)
+                    let pointsPerMonth = document.pointsPerYear / CGFloat(yr.numMonths)
+                    
+                    for monthIndex in 1..<yr.numMonths {
+                        let myPos = yearTopPos + (CGFloat(monthIndex) * pointsPerMonth)
+                        
+                        var tickPath = Path()
+                        tickPath.move(to: CGPoint(x: axisX - (tickLength * 0.6), y: myPos))
+                        tickPath.addLine(to: CGPoint(x: axisX + (tickLength * 0.6), y: myPos))
+                        context.stroke(tickPath, with: .color(.secondary), lineWidth: 1.0)
+                        
+                        let mtext: Text
+
+                        if document.pointsPerYear >= 5120.0 {
+                            mtext = Text("M\(monthIndex + 1)")
+                                .font(.body)
+                        } else {
+                            mtext = Text("M\(monthIndex + 1)")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        context.draw(mtext, at: CGPoint(x: axisX - tickLength - 8, y: myPos), anchor: .trailing)
+                    }
+                }
+            }
+            
+            if document.pointsPerYear >= 5120.0 {
+                for (yearIndex, yr) in document.years.enumerated() {
+                    let yearTopPos = topInset + (CGFloat(yearIndex) * document.pointsPerYear)
+                    let pointsPerMonth = document.pointsPerYear / CGFloat(yr.numMonths)
+                    
+                    for monthIndex in 0..<yr.numMonths {
+                        let monthTopPos = yearTopPos + (CGFloat(monthIndex) * pointsPerMonth)
+                        
+                        let currentMonth = yr.months[monthIndex]
+                        let pointsPerDay = pointsPerMonth / CGFloat(currentMonth.numDays)
+                        
+                        for dayIndex in 1..<currentMonth.numDays {
+                            let dayPos = monthTopPos + (CGFloat(dayIndex) * pointsPerDay)
+                            
+                            var tickPath = Path()
+                            tickPath.move(to: CGPoint(x: axisX - (tickLength * 0.35), y: dayPos))
+                            tickPath.addLine(to: CGPoint(x: axisX + (tickLength * 0.35), y: dayPos))
+                            context.stroke(tickPath, with: .color(.secondary), lineWidth: 0.75)
+                            
+                            let dayText = Text("D\(dayIndex + 1)")
+                                .font(.system(size: 8))
+                                .foregroundColor(.secondary)
+                            
+                            context.draw(dayText, at: CGPoint(x: axisX - tickLength - 6, y: dayPos), anchor: .trailing)
+                        }
+                    }
+                }
             }
         }
     }
