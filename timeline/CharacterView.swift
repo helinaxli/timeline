@@ -10,7 +10,9 @@ import SwiftUI
 struct CharacterView: View {
     @Bindable var document: TimelineDocument
     
+    @Binding var navigationPath: NavigationPath
     @Environment(\.dismiss) private var dismiss
+    
     @State private var isShowingNewEventSheet = false
     @State private var isShowingNewStoryCharSheet = false
     @State private var isShowingNewArcSheet = false
@@ -86,11 +88,19 @@ struct CharacterView: View {
         )
         .background(
             Button("") {
-                dismiss()
+                navigationPath.removeLast(navigationPath.count)
             }
             .keyboardShortcut("1", modifiers: .command)
-            .hidden()
+            .opacity(0)
         )
+        .background(
+            Button("") {
+                navigationPath.append(AppRoute.arc)
+            }
+            .keyboardShortcut("3", modifiers: .command)
+            .opacity(0)
+        )
+        
         // Sheet for creating a new character
         .sheet(isPresented: $isShowingNewStoryCharSheet) {
             NewStoryCharSheet(document: document, isPresented: $isShowingNewStoryCharSheet)

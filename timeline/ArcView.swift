@@ -15,6 +15,7 @@ struct ArcView: View {
     @State private var isShowingNewArcSheet = false
     @State private var showAllArcs = false
     
+    @Binding var navigationPath: NavigationPath
     @Environment(\.dismiss) private var dismiss
     
     @State private var editingArc: Arc? = nil
@@ -79,11 +80,19 @@ struct ArcView: View {
         )
         .background(
             Button("") {
-                dismiss()
+                navigationPath.removeLast(navigationPath.count)
             }
             .keyboardShortcut("1", modifiers: .command)
-            .hidden()
+            .opacity(0)
         )
+        .background(
+            Button("") {
+                navigationPath.append(AppRoute.character)
+            }
+            .keyboardShortcut("2", modifiers: .command)
+            .opacity(0)
+        )
+        
         // Sheet for creating a new character
         .sheet(isPresented: $isShowingNewStoryCharSheet) {
             NewStoryCharSheet(document: document, isPresented: $isShowingNewStoryCharSheet)
