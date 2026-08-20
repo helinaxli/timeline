@@ -119,7 +119,7 @@ struct NewArcSheet: View {
             if let arcToEdit {
                 arc = arcToEdit
             }
-            // document.colorPalette = ["Default", "Red", "Orange", "Yellow", "Green", "Mint", "Blue", "Indigo", "Purple", "Pink"]
+            // document.colorPalette = ["Default", "Red", "Orange", "Yellow", "Green", "Mint", "Blue", "Indigo", "Purple", "Pink", "Gray"]
         }
     }
     

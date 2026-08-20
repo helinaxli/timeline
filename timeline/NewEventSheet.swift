@@ -13,6 +13,7 @@ struct NewEventSheet: View {
     @State private var event = Event(id: UUID())
     @Binding var isPresented: Bool
     var eventToEdit: Event? = nil
+    @State private var isExpanded = false
     private var isEditing: Bool {
         eventToEdit != nil
     }
@@ -235,6 +236,73 @@ struct NewEventSheet: View {
                 .shadow(color: Color.black.opacity(0.15), radius: 5, x: 0, y: 3)
             }
             
+            // Color
+            VStack(spacing: 6) {
+                // 1. Dropdown Header Button
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isExpanded.toggle()
+                    }
+                }) {
+                    HStack {
+                        Text(event.nodeColor.isEmpty ? "Select Color" : event.nodeColor)
+                            .font(.body)
+                            .foregroundColor(document.whatColor(name: event.nodeColor).0)
+                        
+                        Spacer()
+                        
+                        Image(systemName: "chevron.up")
+                            .font(.body)
+                            .rotationEffect(.degrees(isExpanded ? 0 : 180))
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 6)
+                    .background(document.whatColor(name: event.nodeColor).1)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.black, lineWidth: 1)
+                    )
+                }
+                .buttonStyle(.plain)
+
+                // 2. Expandable Items List
+                if isExpanded {
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: 0) {
+                            ForEach(document.colorPalette, id: \.self) { col in
+                                Button(action: {
+                                    event.nodeColor = col
+                                    withAnimation {
+                                        isExpanded = false
+                                    }
+                                }) {
+                                    HStack {
+                                        Text(col)
+                                            .font(.body)
+                                            .foregroundColor(document.whatColor(name: col).0)
+                                            //.fontWeight(.semibold)
+                                        Spacer()
+                                    }
+                                    .padding(.vertical, 6)
+                                    .padding(.horizontal, 16)
+                                    .background(document.whatColor(name: col).1)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+
+                    }
+                    .frame(maxHeight: 180)
+                    .background(Color.white)
+                    .cornerRadius(8)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.black, lineWidth: 1)
+                    )
+                    .shadow(color: Color.black.opacity(0.15), radius: 6, x: 2, y: 4)
+                }
+            }
+            
             HStack {
                 Button("Cancel", role: .cancel) {
                     dismiss()
@@ -265,6 +333,7 @@ struct NewEventSheet: View {
                 selectedChars = eventToEdit.characters
                 selectedArcs = eventToEdit.arcs
             }
+            // document.colorPalette = ["Default", "Red", "Orange", "Yellow", "Green", "Mint", "Blue", "Indigo", "Purple", "Pink", "Gray"]
         }
     }
 

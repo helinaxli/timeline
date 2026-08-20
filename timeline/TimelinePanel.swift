@@ -220,7 +220,8 @@ struct TimelinePanel: View {
     }
     
     private func resolveColor(for node: Binding<Event>, fallbackColor: String) -> String {
-        if let manualColor = node.wrappedValue.nodeColor, !manualColor.isEmpty {
+        let manualColor = node.wrappedValue.nodeColor
+        if manualColor != "Default" {
             return manualColor
         }
         return fallbackColor

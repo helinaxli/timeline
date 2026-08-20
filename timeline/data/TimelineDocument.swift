@@ -25,7 +25,7 @@ class TimelineDocument {
     
     var pointsPerYear: CGFloat = 80.0
     
-    var colorPalette: [String] = ["Default", "Red", "Orange", "Yellow", "Green", "Mint", "Blue", "Indigo", "Purple", "Pink"]
+    var colorPalette: [String] = ["Default", "Red", "Orange", "Yellow", "Green", "Mint", "Blue", "Indigo", "Purple", "Pink", "Gray"]
     var colorDictionary: [String: Int] = [:]
     
     init(title: String = "Untitled", config: TimelineConfig) {
@@ -116,6 +116,8 @@ class TimelineDocument {
             return (.black, .indigo.opacity(0.15))
         } else if name == "Pink" {
             return (.black, .pink.opacity(0.15))
+        } else if name == "Gray" {
+            return (.black, .gray.opacity(0.15))
         } else {
             return (.black, .white)
         }

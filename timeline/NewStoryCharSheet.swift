@@ -144,6 +144,7 @@ struct NewStoryCharSheet: View {
             if let characterToEdit {
                 storyc = characterToEdit
             }
+            // document.colorPalette = ["Default", "Red", "Orange", "Yellow", "Green", "Mint", "Blue", "Indigo", "Purple", "Pink", "Gray"]
         }
     }
     

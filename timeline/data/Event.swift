@@ -17,7 +17,7 @@ class Event: Identifiable, Comparable {
     var day: Int?
     var side: String
     var details: String = ""
-    var nodeColor: String?
+    var nodeColor: String = "Default"
     
     var width: CGFloat = 180
     var height: CGFloat = 90
